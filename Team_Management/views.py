@@ -1,3 +1,5 @@
 from django.shortcuts import render
 
-# Create your views here.
+
+def Tasks_List(request):
+    return render(request , 'Home/Tasks_List.html' , {})
