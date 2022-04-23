@@ -10,10 +10,10 @@
 </head>
 <body>
     <div class="container mt-3">
-        <h2 style="color: rgb(3, 67, 67);"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9_lg5R-ogUjzfSO0x99AUPeZrIUMSbE8ikw&usqp=CAU" alt="" style="border-radius: 50%;width: 100px;">| Team Management</h2>
+        <h2 style="color: rgb(3, 67, 67);"><a href="#home"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9_lg5R-ogUjzfSO0x99AUPeZrIUMSbE8ikw&usqp=CAU" alt="" style="border-radius: 50%;width: 80px;"></a> Team Management</h2>
         <br>
         <!-- Nav pills -->
-        <ul class="nav nav-pills" role="tablist">
+        <ul class="nav nav-pills bg-light" role="tablist" style="border-radius: 15px;padding: 10px;">
           <li class="nav-item">
             <a class="nav-link active" data-bs-toggle="pill" href="#home">Home</a>
           </li>
@@ -38,8 +38,28 @@
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
           </div>
           <div id="tasks" class="container tab-pane fade"><br>
-            <h3>Tasks</h3>
-            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <div class="top" style="display: flex;align-items: center;justify-content: space-between;">
+              <div class="left">
+                <h3 style="color: rgb(3, 67, 67);"><img src="https://i.pinimg.com/originals/09/2f/d0/092fd0a6692251c33744c77697c9b544.png" style="border-radius: 50%;width: 80px;" alt="">Tasks</h3>
+              </div>
+              
+              <div class="right">
+                <button type="button" class="btn btn-primary">Add Task</button>
+                <button type="button" class="btn btn-danger">Remove Task</button>
+              </div>
+            </div>
+
+
+            {% for task in all_Tasks %}
+            <div class="container p-5 my-5 bg-primary text-white" style="border-radius: 10px;">
+              <h3 style="margin-bottom: 20px; color: rgb(0, 251, 255);">{{task.title}}</h3>
+              <h5>Publish Date: {{task.publish_Date}}</h5>
+              <p>{{task.description}}</p>
+              <h4>DeadLine: {{task.deadLine}} Days</h4>
+            </div>
+            {% endfor %}
+
+
           </div>
           <div id="projects" class="container tab-pane fade"><br>
             <h3>Projects</h3>
@@ -55,5 +75,8 @@
           </div>
         </div>
       </div>
+
+
+
 </body>
 </html>
