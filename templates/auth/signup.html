@@ -1,0 +1,62 @@
+{% extends "Header.html" %}
+
+{% block signup %}
+<body>
+
+    <div class="container mt-3">
+        <h3>Signup</h3>
+        {% for message in messages %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Warning: </strong> {{message}}
+        <button class="btn-close" data-bs-dismiss="alert">      
+        <span aria-hidden="true">&times;</span> 
+        </button>
+        </div>
+        {% endfor %}
+        <form action="/signup" class="was-validated" method="post">
+            {% csrf_token %}
+          <div class="mb-3 mt-3">
+            <label for="uname" class="form-label">Username:</label>
+            <input type="text" class="form-control" id="uname" placeholder="Enter username" name="uname" required>
+            <div class="valid-feedback">Valid.</div>
+            <div class="invalid-feedback">Please fill out this field.</div>
+          </div>
+          <div class="mb-3 mt-3">
+            <label for="fname" class="form-label">First name:</label>
+            <input type="text" class="form-control" id="fname" placeholder="Enter first name" name="fname" required>
+            <div class="valid-feedback">Valid.</div>
+            <div class="invalid-feedback">Please fill out this field.</div>
+          </div>
+          <div class="mb-3 mt-3">
+            <label for="lname" class="form-label">Last name:</label>
+            <input type="text" class="form-control" id="lname" placeholder="Enter last name" name="lname" required>
+            <div class="valid-feedback">Valid.</div>
+            <div class="invalid-feedback">Please fill out this field.</div>
+          </div>
+          <div class="mb-3 mt-3">
+            <label for="email" class="form-label">Email:</label>
+            <input type="email" class="form-control" id="email" placeholder="Enter email" name="email" required>
+            <div class="valid-feedback">Valid.</div>
+            <div class="invalid-feedback">Please fill out this field.</div>
+          </div>
+          <div class="mb-3">
+            <label for="pwd1" class="form-label">Password:</label>
+            <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pswd1" required>
+            <div class="valid-feedback">Valid.</div>
+            <div class="invalid-feedback">Please fill out this field.</div>
+          </div>
+          <div class="mb-3">
+            <label for="pwd2" class="form-label">Confirm your password:</label>
+            <input type="password" class="form-control" id="pwd" placeholder="confirm password" name="pswd2" required>
+            <div class="valid-feedback">Valid.</div>
+            <div class="invalid-feedback">Please fill out this field.</div>
+          </div>
+
+        <button type="submit" class="btn btn-primary">Signup</button>
+        </form>
+      </div>
+
+
+</body>
+
+{% endblock signup %}

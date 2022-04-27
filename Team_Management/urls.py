@@ -8,4 +8,9 @@ urlpatterns = [
     path('', HomeView.Tasks_List, name="Home"),
     path('Tasks_Json/', TaskJson.as_view(), name="TasksJsonView"),
     path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('favicon.ico'))),
+    path('signup', views.signup, name="signup"),
+    path('login', views.log_in, name="login"),
+    path('signout', views.signout, name="signout"),
+    path('activate/<uidb64>/<token>', views.activate, name="activate"),
+    
 ]

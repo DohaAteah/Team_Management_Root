@@ -4,7 +4,7 @@ console.log('Hi')
 $.ajax({
     type: 'GET',
     url: '/Tasks_Json/',
-    succcess: function(response){
+    success: function(response){
         console.log(response)  
        /* const data = response.data
         data.map(Task=>{
