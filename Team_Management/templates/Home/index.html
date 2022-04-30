@@ -1,0 +1,21 @@
+{% extends "HomePage.html" %}
+
+{% block content %}
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div id="home" class="container tab-pane active"><br>
+              <h3>HOME</h3>
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            </div>
+
+            <div id="my_Team" class="container d-flex align-items-center tab-pane  p-3 card bg-light text-black fade"><br>
+              
+              <h3>Your Team</h3>
+              <button type="button" class="btn btn-primary"><a class="nav-link text-white" href="/toCreateTeam">Create Team</a></button>
+              
+            </div>
+          
+
+          </div>
+        </div>
+        {% endblock content %}

@@ -1,20 +1,20 @@
 console.log('Hi')
 
 
-$.ajax({
+/*$.ajax({
     type: 'GET',
     url: '/Tasks_Json/',
     success: function(response){
-        console.log(response)  
-       /* const data = response.data
+          
+        const data = response.data
         data.map(Task=>{
-           print(Task.id)
-        })*/
+           console.log(Task.id)
+        })
     },
     error: function(error){
         console.log(error)
     }
-})
+})*/
 
 console.log('Hi2')
 

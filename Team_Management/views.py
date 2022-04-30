@@ -1,17 +1,16 @@
-import email
-from email import message
-import imp
+from datetime import date
+from Team_Management.form import TeamForm
 from tkinter.messagebox import NO
+from turtle import title
 from unicodedata import name
-from urllib import request
 from django.conf import settings
 from django.shortcuts import redirect, render
-from .models import Task
+from Team_Management.models import Task, Team
 from django.utils import timezone
 from django.views.generic import View , TemplateView
 from .models import Task
 from django.http import JsonResponse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User,Group
 from django.contrib import messages
 from django.contrib.auth import authenticate ,login,logout
 from myApp import settings
@@ -21,14 +20,12 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from . tokens import generate_token
+from django.contrib.auth.context_processors import auth
 
 
 
-
-class HomeView(TemplateView):
-  def Tasks_List(request):
-   all_Tasks = Task.objects.filter(created_Date__lte = timezone.now()).order_by('created_Date')
-   return render(request , 'Home/Tasks_List.html' , {'all_Tasks': all_Tasks})
+def toHome(request):
+   return render(request , 'Home/index.html')
 
 class TaskJson(View):
     def get(self , *args  , **kwargs):
@@ -52,60 +49,61 @@ def signup(request):
       messages.error(request,"Username is already exist!")
       return redirect('signup')
 
-    if User.objects.filter(email=email):
+    elif User.objects.filter(email=email):
       messages.error(request,"Email is already exist!")
       return redirect('signup')
 
-    if len(uname)>10:
+    elif len(uname)>10:
       messages.error(request,"Username must be under 10 characters!")
       return redirect('signup')
 
-    if pass1 != pass2:
+    elif pass1 != pass2:
       messages.error(request, "passwoed didn't match!")
       return redirect('signup')
 
-    if not uname.isalnum():
+    elif not uname.isalnum():
        messages.error(request, "Username must be Alpha-Numeric!")
        return redirect('signup')
-
-    my_user = User.objects.create_user(uname,email,pass1)
-    my_user.first_name = fname
-    my_user.last_name = lname
-    my_user.is_active = False
-    my_user.save()
-    messages.success(request,"We have send you a confirmation email, please check your email.")
+    else:
+       my_user = User.objects.create_user(uname,email,pass1)
+       my_user.first_name = fname
+       my_user.last_name = lname
+       my_user.is_active = False
+       my_user.save()
+       messages.success(request,"We have send you a confirmation email, please check your email.")
     # email 
-    subject = "Welcome to CONTROL"
-    message = "Hello " + my_user.first_name + " \n" + "Thank you for visiting our website.\n We have also send you a confirmation email, please confirm your email address to activate your account.\n\n UDTeam "
-    from_email = settings.EMAIL_HOST_USER
-    to_list = [my_user.email]
-    send_mail(subject, message, from_email, to_list, fail_silently =True)
+       subject = "Welcome to CONTROL"
+       message = "Hello " + my_user.first_name + " \n" + "Thank you for visiting our website.\n We have also send you a confirmation email, please confirm your email address to activate your account.\n\n UDTeam "
+       from_email = settings.EMAIL_HOST_USER
+       to_list = [my_user.email]
+       send_mail(subject, message, from_email, to_list, fail_silently =True)
 
 
     # send confirmation email 
-    current_site = get_current_site(request)
-    email_subject = "Confirm your email @ CONTROL"
-    email_message = render_to_string('email_confirmation.html',{
-      'name': my_user.first_name,
-      'domain': current_site.domain,
-      'uid': urlsafe_base64_encode(force_bytes(my_user.pk)),
-      'token': generate_token.make_token(my_user)
-    })
-    email = EmailMessage(
-      email_subject,
-      email_message,
-      settings.EMAIL_HOST_USER,
-      [my_user.email]
-    )
-    email.fail_silently = True
-    email.send()
+       current_site = get_current_site(request)
+       email_subject = "Confirm your email @ CONTROL"
+       email_message = render_to_string('email_confirmation.html',{
+         'name': my_user.first_name,
+          'domain': current_site.domain,
+          'uid': urlsafe_base64_encode(force_bytes(my_user.pk)),
+         'token': generate_token.make_token(my_user)
+        })
+       email = EmailMessage(
+         email_subject,
+         email_message,
+         settings.EMAIL_HOST_USER,
+         [my_user.email]
+       )
+       email.fail_silently = True
+       email.send()
 
 
-    return redirect('login')
+       return redirect('login')
     
     
 
   return render(request, "auth/signup.html")      
+
 
 def log_in(request):
    if request.method == "POST":
@@ -116,8 +114,7 @@ def log_in(request):
       if user is not None:
         login(request, user)
         fname = user.first_name
-        render(request, "Header.html",{'fname': fname})
-        return  redirect('Home')
+        return toLogIn(request)
         
 
       else:
@@ -126,7 +123,12 @@ def log_in(request):
       
    return render(request, "auth/login.html")      
  
- 
+def toLogIn(request):
+  myUser = request.user
+  return render(request, "Header.html",{'myUser': myUser})
+  return redirect('Home')
+    
+
 def signout(request):
     logout(request)
     return redirect('Home')
@@ -145,6 +147,59 @@ def activate(request, uidb64, token):
     return redirect('Home')
   else:
     return redirect(request, "activationFailed.html")
+
+def create_team(request):
+  if request.method == "POST":
+    teamTitle = request.POST['title']
+    if Team.objects.filter(title = teamTitle).exists():
+      messages.error(request, "Team name already exists!")
+      return redirect('toCreateTeam')
+    else:
+      form = TeamForm(request.POST)
+      new_Team = form.save(commit=False)
+      new_Team.title = request.POST['title']
+      new_Team.description = request.POST['description']
+      new_Team.leader = request.user
+
+      new_Team.save()
+
+      #set group name
+      g1, created = Group.objects.get_or_create(name=new_Team.title)
+
+      if not created:
+        print(request,"error")
+      #autopopulate / assign author to new team
+      g1.user_set.add(new_Team.leader)
+
+      #debug (hopefully print: Team Name, Key, Creator, Members
+      print(new_Team)
+      return toViewTeam(request)
+              
+
+  else:
+      print(request,"error")
+
+
+def toTeam(request):
+   if request.user.is_authenticated:
+     team = Team.objects.filter(leader=request.user)
+     if team.exists():
+       return toViewTeam(request)
+     else:
+       return toCreateTeam(request)
+
+
+def toCreateTeam(request):
+       return render(request, "Team/Create_Team.html") 
+def toViewTeam(request):
+     new_Team = None
+     if request.user.is_authenticated:
+      all_Tasks = Task.objects.filter(created_Date__lte = timezone.now()).order_by('created_Date')
+      for task in all_Tasks:
+       task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
+      new_Team = Team.objects.filter(leader=request.user)
+     return render(request, "Team/TeamPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks}) 
+
   
 
  

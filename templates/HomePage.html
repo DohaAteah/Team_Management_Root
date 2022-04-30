@@ -10,16 +10,12 @@
           <li class="nav-item">
             <a  data-bs-toggle="pill" href="#home"><a class="nav-link active" href="\">Home</a></a>
           </li>
+          {% if user.is_authenticated %}
           <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="pill" href="#tasks">Tasks</a>
+            <a data-bs-toggle="pill" href="#my_Team"><a class="nav-link" href="\toTeam">My Team</a></a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="pill" href="#projects">Projects</a>
-          </li>
-  
-        
- 
-   
+          {% endif %}
+
 
         </ul>
 

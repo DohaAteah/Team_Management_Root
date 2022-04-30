@@ -1,0 +1,104 @@
+{% extends "Header.html" %}
+
+{% block TeamPage %}
+<body>
+
+
+    <div class="container mt-3">
+
+        <!-- Nav pills -->
+        <ul class="nav nav-pills bg-light" role="tablist" style="border-radius: 15px;padding: 10px;">
+          <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="pill" href="#teamInfo">Team Info</a></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="pill" href="#tasks">Tasks</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="pill" href="#projects">Projects</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="pill" href="#members">Members</a>
+          </li>
+          <li class="nav-item">
+            <a  data-bs-toggle="pill" href="\"><a class="nav-link" href="\">Back to home</a></a>
+          </li>
+
+        </ul>
+
+      
+
+
+        <div class="tab-content">
+            <div id="teamInfo" class="container tab-pane active"><br>
+                <div class="container mt-3 p-5 card bg-light text-black">
+                    <h3 class="text-primary">Team details</h3>
+                      {% for message in messages %}
+                      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                      <strong>Alert: </strong> {{message}}
+                      <button class="btn-close" data-bs-dismiss="alert">      
+                      <span aria-hidden="true">&times;</span> 
+                      </button>
+                      </div>
+                      {% endfor %}
+                      {% for team in new_Team %}
+                    <h1>Welcome to {{ team.title }} </h1>
+                    <h3>Leader: {{ team.leader.username }}</h3>
+                    {% endfor %}
+                  </div>
+          
+            </div>
+            <div id="projects" class="container tab-pane fade"><br>
+              <h3>Projects</h3>
+              <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+            </div>
+            <div id="members" class="container tab-pane fade"><br>
+              
+              <h3>Team members</h3>
+              {% for member in new_Team.members.all %}
+              <h3>{{member.username}} </h3>
+                  {% endfor %}
+            </div>
+            <div id="tasks" class="container tab-pane fade"><br>
+              <div class="top" style="display: flex;align-items: center;justify-content: space-between;">
+                <div class="left">
+                  <h3 style="color: rgb(3, 67, 67);"><img src="https://i.pinimg.com/originals/09/2f/d0/092fd0a6692251c33744c77697c9b544.png" style="border-radius: 50%;width: 80px;" alt="">Tasks</h3>
+                </div>
+                
+                <div class="right">
+                  <button type="button" class="btn btn-primary">Add Task</button>
+                  <button type="button" class="btn btn-danger">Remove Task</button>
+                </div>
+              </div>
+  
+  
+              {% for task in all_Tasks %}
+              <div class="container p-5 my-5 bg-primary text-white" style="border-radius: 10px;">
+                <div class="d-flex">
+                    <h3 style="margin-bottom: 20px; color: rgb(0, 251, 255);">{{task.title}}</h3>
+                    <h3>For: {{ task.forUser.username }}</h3>
+                </div>
+                <h5>Publish Date: {{task.created_Date}}</h5>
+                <p>{{task.description}}</p>
+                <h4>DeadLine: {{task.deadLine}} Days</h4>
+                <h4>Days left: {{task.dyas_Left}} Days</h4>
+                
+              </div>
+              {% endfor %}
+  
+  
+  
+            </div>
+
+          </div>
+        </div>
+
+
+
+
+
+
+
+</body>
+
+{% endblock TeamPage %}

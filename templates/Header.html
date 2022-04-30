@@ -23,7 +23,7 @@
     <div style="display: flex;align-items: center;justify-content: end;width: 50%;">
         {% if user.is_authenticated %}
       
-            <a class="nav-link dropdown-toggle btn btn-primary" href="#" role="button" data-bs-toggle="dropdown" style="color: white;margin-left: 5px">{{ fname }}</a>
+            <a class="nav-link dropdown-toggle btn btn-primary" href="#" role="button" data-bs-toggle="dropdown" style="color: white;margin-left: 5px">{{ myUser.username }}</a>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="#">My profile</a></li>
               <li><a class="dropdown-item" href="/signout" >Sign out</a></li>
@@ -54,7 +54,17 @@
         {% endblock %}
         
       </div>
-
+      <div>
+        {% block createTeam %}
+                {% endblock %}
+        
+      </div>
+      <div>
+        {% block TeamPage %}
+        {% endblock %}
+        
+      </div>
+    
     
 </body>
 </html>

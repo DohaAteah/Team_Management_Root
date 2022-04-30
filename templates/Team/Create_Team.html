@@ -1,0 +1,35 @@
+{% extends "Header.html" %}
+
+{% block createTeam %}
+<body>
+
+    <div class="container mt-3 p-5 card bg-light text-black">
+        <h3>Create new team</h3>
+          {% for message in messages %}
+          <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          <strong>Alert: </strong> {{message}}
+          <button class="btn-close" data-bs-dismiss="alert">      
+          <span aria-hidden="true">&times;</span> 
+          </button>
+          </div>
+          {% endfor %}
+        <form action="/createTeam" class="was-validated" method="post">
+            {% csrf_token %}
+          <div class="mb-3 mt-3">
+            <label for="title" class="form-label">Team name:</label>
+            <input type="text" class="form-control" id="title" placeholder="Enter team name" name="title" required>
+            <div class="valid-feedback">Valid.</div>
+            <div class="invalid-feedback">Please fill out this field.</div>
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Description:</label>
+            <input type="text" class="form-control" id="description" placeholder="Enter description" name="description">
+          </div>
+        <button type="submit" class="btn btn-primary btn-lg">Create</button>
+        </form>
+      </div>
+
+
+</body>
+
+{% endblock createTeam %}
