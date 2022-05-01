@@ -18,4 +18,6 @@ urlpatterns = [
     path('toTeam', views.toTeam, name="toTeam"),
     path('toAddMembers', views.toAddMembers, name="toAddMembers"),
     path('addMembers', views.addMembers, name="addMembers"),
+    path('toRemoveMembers', views.toRemoveMembers, name="toRemoveMembers"),
+    path('removeMembers', views.removeMembers, name="removeMembers"),
 ]

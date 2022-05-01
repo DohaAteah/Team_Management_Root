@@ -1,6 +1,7 @@
 {% extends "Header.html" %}
 
 {% block TeamPage %}
+{% load static %}
 <body>
 
 
@@ -13,6 +14,9 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" data-bs-toggle="pill" href="#tasks">Tasks</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="pill" href="#myTasks">My Tasks</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" data-bs-toggle="pill" href="#projects">Projects</a>
@@ -57,26 +61,44 @@
           
             </div>
             <div id="projects" class="container tab-pane fade"><br>
-              <h3>Projects</h3>
+              <h3><img src="{% static 'img\Projects.png' %}" alt="" style="width: 50px;margin-right: 10px;">Projects</h3>
               <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
             </div>
             <div id="members" class="container tab-pane fade"><br>
               <div class="d-flex justify-content-between align-items-center">
-
-                <h3>Team members</h3>
-                <button type="button" class="btn btn-primary"><a class="nav-link text-white" href="/toAddMembers">Add members</a></button>
                 
-              </div>
-              {% for team in new_Team %}
-              {% for member in team.members.all %}
-              <h3>{{member.username}} </h3>
-              {% endfor %}{% endfor %}
+                <h3><img src="{% static 'img\Members.png' %}" alt="" style="width: 50px;margin-right: 10px;">Team members</h3>
+                <div class="d-flex">
 
+                  <button type="button" class="btn btn-primary m-2"><a class="nav-link text-white p-0" href="/toAddMembers">Add members</a></button>
+                  <button type="button" class="btn btn-danger m-2"><a class="nav-link text-white p-0" href="/toRemoveMembers">Remove members</a></button>
+
+                </div>
+
+              </div>
+              <br>
+              <br>
+              <div class="row">
+                {% for team in new_Team %}
+                {% for member in team.members.all %}
+                <div class="card col-sm-5 m-2" style="width:250px">
+                  <img class="card-img-top" src="{% static 'img\member.png' %}" alt="Card image" style="width:100%">
+                  <div class="card-body d-flex align-items-center" style="flex-direction: column;">
+                    <h4 class="card-title">{{member.username}}</h4>
+                    <p class="card-text"><strong>Role: </strong> Developer</p>
+                    <a href="#" class="btn btn-primary" style="width: 90%;">See Profile</a>
+                  </div>
+                </div>
+
+                {% endfor %}
+                {% endfor %}  
+              </div>
+              
             </div>
             <div id="tasks" class="container tab-pane fade"><br>
               <div class="top" style="display: flex;align-items: center;justify-content: space-between;">
                 <div class="left">
-                  <h3 style="color: rgb(3, 67, 67);"><img src="https://i.pinimg.com/originals/09/2f/d0/092fd0a6692251c33744c77697c9b544.png" style="border-radius: 50%;width: 80px;" alt="">Tasks</h3>
+                  <h3 style="color: rgb(3, 67, 67);"><img src="{% static 'img\Tasks.png' %}" alt="" style="width: 50px;margin-right: 10px;">Team Tasks</h3>
                 </div>
                 
                 <div class="right">
@@ -101,6 +123,23 @@
            </div>
   
   
+            </div>
+            <div id="myTasks" class="container tab-pane fade"><br>
+              <h3 style="color: rgb(3, 67, 67);"><img src="{% static 'img\Tasks.png' %}" alt="" style="width: 50px;margin-right: 10px;">My Tasks</h3>
+              <div class="row">
+                {% for my_task in my_Tasks %}
+                  <div class="container col-sm-6 p-5 my-5 bg-primary text-white" style="border-radius: 10px;width: 40%;height: 500px;">
+                        <h3><y>Title: </y> {{my_task.title}}</h3>
+                        <h5><y>For: </y>{{ my_task.forUser.username }}</h5>
+                    <h5><y>Publish Date: </y>{{my_task.created_Date}}</h5>
+                    <p class="card p-2" style="height: 50%; background-color: rgb(14, 108, 181);">{{my_task.description}}</p>
+                    <h4><y>DeadLine: </y>{{my_task.deadLine}} Days</h4>
+                    <h4><y style="color: rgb(250, 95, 95);">Time left: </y>{{my_task.dyas_Left}} Days</h4>
+                    <button type="button" class="btn btn-info" style="width: 30%;">Details</button>
+                  </div>
+                  {% endfor %}
+               </div>
+            
             </div>
 
           </div>

@@ -201,20 +201,24 @@ def toViewTeam(request):
      new_Team = None
      if request.user.is_authenticated:
       all_Tasks = Task.objects.filter(created_Date__lte = timezone.now()).order_by('created_Date')
+      my_Tasks = Task.objects.filter(forUser = request.user)
       if all_Tasks.exists():
        for task in all_Tasks:
         task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
+      if my_Tasks.exists():
+       for myTask in my_Tasks:
+        myTask.dyas_Left = myTask.deadLine - (date.today() - myTask.created_Date).days
 
       new_Team = Team.objects.filter(leader=request.user)
       if new_Team.exists():
-       return render(request, "Team/TeamPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks}) 
+       return render(request, "Team/TeamPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks, 'my_Tasks': my_Tasks}) 
       else:
          Teams = Team.objects.all()
          for team_ins in Teams: 
            for member in team_ins.members.all():
              if request.user == member:
               theTeam = Team.objects.filter(title = team_ins.title)
-              return render(request, "Team/TeamPage.html", {'new_Team': theTeam,'all_Tasks': all_Tasks}) 
+              return render(request, "Team/TeamPage.html", {'new_Team': theTeam,'all_Tasks': all_Tasks, 'my_Tasks': my_Tasks}) 
    
 def toAddMembers(request):
       return render(request, "Team/Add_Members.html") 
@@ -222,15 +226,53 @@ def toAddMembers(request):
 def addMembers(request):
   if request.method == "POST":
     newUser = request.POST['addUser']
+    if newUser=="admin":
+        messages.error(request, "Can't add admin!")
+        return render(request,"Team/Add_Members.html")
+    
     if User.objects.filter(username = newUser).exists():
         the_Team = Team.objects.filter(leader=request.user)
         user = User.objects.get(username = newUser)
+        
         for team in the_Team:
-         team.members.add(user)
-         return render(request,"Team/Add_Members.html")
+          #for member in team.members.all():
+          #  if user == member:
+          #    messages.error(request, "User already in the team!")
+          #    return render(request,"Team/Add_Members.html")
+          #  else:
+             team.members.add(user)
+             messages.error(request, "Successfully added!")
+             return render(request,"Team/Add_Members.html")
     else:
         messages.error(request, "User not found!")
         return render(request,"Team/Add_Members.html")
+
+def toRemoveMembers(request):
+      return render(request, "Team/Remove_Members.html") 
+
+def removeMembers(request):
+  if request.method == "POST":
+    removeUser = request.POST['removeUser']
+    if removeUser=="admin":
+        messages.error(request, "Can't remove admin!")
+        return render(request,"Team/Remove_Members.html")
+    
+    if User.objects.filter(username = removeUser).exists():
+        the_Team = Team.objects.filter(leader=request.user)
+        user = User.objects.get(username = removeUser)
+        
+        for team in the_Team:
+          #for member in team.members.all():
+          #  if user == member:
+          #    messages.error(request, "User already in the team!")
+          #    return render(request,"Team/Add_Members.html")
+          #  else:
+             team.members.remove(user)
+             messages.success(request, "Successfully removed!")
+             return render(request,"Team/Remove_Members.html")
+    else:
+        messages.error(request, "User not found!")
+        return render(request,"Team/Remove_Members.html")
 
 
 
