@@ -1,5 +1,5 @@
 from datetime import date
-from Team_Management.form import TeamForm
+from Team_Management.form import TeamForm,TaskForm
 from tkinter.messagebox import NO
 from turtle import title
 from unicodedata import name
@@ -147,6 +147,9 @@ def activate(request, uidb64, token):
   else:
     return redirect(request, "activationFailed.html")
 
+def toCreateTeam(request):
+       return render(request, "Team/Create_Team.html") 
+
 def create_team(request):
   if request.method == "POST":
     teamTitle = request.POST['title']
@@ -159,6 +162,7 @@ def create_team(request):
       new_Team.title = request.POST['title']
       new_Team.description = request.POST['description']
       new_Team.leader = request.user
+      new_Team.members.add(request.user)
 
       new_Team.save()
 
@@ -194,32 +198,36 @@ def toTeam(request):
          return toCreateTeam(request)
 
 
-def toCreateTeam(request):
-       return render(request, "Team/Create_Team.html") 
+
 
 def toViewTeam(request):
-     new_Team = None
-     if request.user.is_authenticated:
-      all_Tasks = Task.objects.filter(created_Date__lte = timezone.now()).order_by('created_Date')
-      my_Tasks = Task.objects.filter(forUser = request.user)
-      if all_Tasks.exists():
+  if request.user.is_authenticated:
+    new_Team = Team.objects.filter(leader=request.user)
+    if new_Team.exists():
+      print(new_Team)
+    else:
+       our_Team = Team.objects.all()
+       for team_ins in our_Team: 
+         for member in team_ins.members.all():
+           if request.user == member:
+            new_Team = Team.objects.filter(title = team_ins.title)
+            break
+
+    for team in new_Team:
+     ldr = team.leader
+    all_Tasks = Task.objects.filter(author = ldr).order_by('created_Date')
+    my_Tasks = Task.objects.filter(forUser = request.user,author = ldr)
+    if all_Tasks.exists():
        for task in all_Tasks:
         task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
-      if my_Tasks.exists():
+    if my_Tasks.exists():
        for myTask in my_Tasks:
         myTask.dyas_Left = myTask.deadLine - (date.today() - myTask.created_Date).days
+    return render(request, "Team/TeamPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks, 'my_Tasks': my_Tasks}) 
+  else:
+      messages.error(request, "You must login first!")
+      return render(request,"HomePage.html") 
 
-      new_Team = Team.objects.filter(leader=request.user)
-      if new_Team.exists():
-       return render(request, "Team/TeamPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks, 'my_Tasks': my_Tasks}) 
-      else:
-         Teams = Team.objects.all()
-         for team_ins in Teams: 
-           for member in team_ins.members.all():
-             if request.user == member:
-              theTeam = Team.objects.filter(title = team_ins.title)
-              return render(request, "Team/TeamPage.html", {'new_Team': theTeam,'all_Tasks': all_Tasks, 'my_Tasks': my_Tasks}) 
-   
 def toAddMembers(request):
       return render(request, "Team/Add_Members.html") 
 
@@ -273,6 +281,28 @@ def removeMembers(request):
     else:
         messages.error(request, "User not found!")
         return render(request,"Team/Remove_Members.html")
+
+        
+def toAddTask(request):
+  ourTeam = Team.objects.filter(leader = request.user)
+  return render(request, "Team/Add_Task.html",{'ourTeam':ourTeam}) 
+
+def addTask(request):
+  if request.method == "POST": 
+    form = TaskForm(request.POST)
+    new_Task = form.save(commit=False)
+    new_Task.author = request.user
+    new_Task.title = request.POST['title']
+    uname = request.POST['forUser']
+    user = User.objects.get(username = uname)
+    new_Task.forUser = user
+    new_Task.description = request.POST['description']
+    new_Task.deadLine = request.POST['deadLine']
+    new_Task.save()
+    return toViewTeam(request)
+
+    
+
 
 
 

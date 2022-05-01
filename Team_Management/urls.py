@@ -7,7 +7,7 @@ from django.views.generic.base import RedirectView
 urlpatterns = [
     path('', views.toHome, name="Home"),
     path('Tasks_Json/', TaskJson.as_view(), name="TasksJsonView"),
-    path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('favicon.ico'))),
+    path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('img\Logo.png'))),
     path('signup', views.signup, name="signup"),
     path('login', views.log_in, name="login"),
     path('signout', views.signout, name="signout"),
@@ -20,4 +20,6 @@ urlpatterns = [
     path('addMembers', views.addMembers, name="addMembers"),
     path('toRemoveMembers', views.toRemoveMembers, name="toRemoveMembers"),
     path('removeMembers', views.removeMembers, name="removeMembers"),
+    path('toAddTask', views.toAddTask, name="toAddTask"),
+    path('addTask', views.addTask, name="addTask"),
 ]

@@ -12,7 +12,7 @@ class Task(models.Model):
     forUser = models.ForeignKey(User, related_name='TaskUser', on_delete= models.CASCADE)
     description = models.TextField()    
     created_Date = models.DateField(default=date.today())
-    deadLine = models.IntegerField(default=0)
+    deadLine = models.IntegerField(default=1)
     is_Done = models.BooleanField(default=False)
     dyas_Left = models.IntegerField(default=0)
 
