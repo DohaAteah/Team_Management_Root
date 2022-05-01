@@ -16,4 +16,6 @@ urlpatterns = [
     path('toCreateTeam', views.toCreateTeam, name="toCreateTeam"),
     path('toViewTeam', views.toViewTeam, name="toViewTeam"),
     path('toTeam', views.toTeam, name="toTeam"),
+    path('toAddMembers', views.toAddMembers, name="toAddMembers"),
+    path('addMembers', views.addMembers, name="addMembers"),
 ]

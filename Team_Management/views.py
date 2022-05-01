@@ -186,20 +186,56 @@ def toTeam(request):
      if team.exists():
        return toViewTeam(request)
      else:
-       return toCreateTeam(request)
+         Team1 = Team.objects.all()
+         for team_ins in Team1: 
+           for member in team_ins.members.all():
+             if request.user == member:
+              return toViewTeam(request)
+          
+         return toCreateTeam(request)
 
 
 def toCreateTeam(request):
        return render(request, "Team/Create_Team.html") 
+
 def toViewTeam(request):
      new_Team = None
      if request.user.is_authenticated:
       all_Tasks = Task.objects.filter(created_Date__lte = timezone.now()).order_by('created_Date')
-      for task in all_Tasks:
-       task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
-      new_Team = Team.objects.filter(leader=request.user)
-     return render(request, "Team/TeamPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks}) 
+      if all_Tasks.exists():
+       for task in all_Tasks:
+        task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
 
-  
+      new_Team = Team.objects.filter(leader=request.user)
+      if new_Team.exists():
+       return render(request, "Team/TeamPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks}) 
+      else:
+         Teams = Team.objects.all()
+         for team_ins in Teams: 
+           for member in team_ins.members.all():
+             if request.user == member:
+              theTeam = Team.objects.filter(title = team_ins.title)
+              return render(request, "Team/TeamPage.html", {'new_Team': theTeam,'all_Tasks': all_Tasks}) 
+   
+def toAddMembers(request):
+      return render(request, "Team/Add_Members.html") 
+
+def addMembers(request):
+  if request.method == "POST":
+    newUser = request.POST['addUser']
+    if User.objects.filter(username = newUser).exists():
+        the_Team = Team.objects.filter(leader=request.user)
+        user = User.objects.get(username = newUser)
+        for team in the_Team:
+         team.members.add(user)
+         return render(request,"Team/Add_Members.html")
+    else:
+        messages.error(request, "User not found!")
+        return render(request,"Team/Add_Members.html")
+
+
+
+
+
 
  

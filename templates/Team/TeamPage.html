@@ -41,10 +41,18 @@
                       </button>
                       </div>
                       {% endfor %}
+                      {% if new_Team %}
                       {% for team in new_Team %}
                     <h1>Welcome to {{ team.title }} </h1>
                     <h3>Leader: {{ team.leader.username }}</h3>
                     {% endfor %}
+                    {% endif%}
+                    {% if team_ins %}
+                    {% for team in team_ins %}
+                    <h1>Welcome to {{ team.title }} </h1>
+                    <h3>Leader: {{ team.leader.username }}</h3>
+                    {% endfor %}
+                    {% endif %}
                   </div>
           
             </div>
@@ -53,11 +61,17 @@
               <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
             </div>
             <div id="members" class="container tab-pane fade"><br>
-              
-              <h3>Team members</h3>
-              {% for member in new_Team.members.all %}
+              <div class="d-flex justify-content-between align-items-center">
+
+                <h3>Team members</h3>
+                <button type="button" class="btn btn-primary"><a class="nav-link text-white" href="/toAddMembers">Add members</a></button>
+                
+              </div>
+              {% for team in new_Team %}
+              {% for member in team.members.all %}
               <h3>{{member.username}} </h3>
-                  {% endfor %}
+              {% endfor %}{% endfor %}
+
             </div>
             <div id="tasks" class="container tab-pane fade"><br>
               <div class="top" style="display: flex;align-items: center;justify-content: space-between;">
