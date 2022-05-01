@@ -125,8 +125,7 @@ def log_in(request):
  
 def toLogIn(request):
   myUser = request.user
-  return render(request, "Header.html",{'myUser': myUser})
-  return redirect('Home')
+  return render(request, "HomePage.html",{'myUser': myUser})
     
 
 def signout(request):

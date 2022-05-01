@@ -14,6 +14,13 @@
           <li class="nav-item">
             <a data-bs-toggle="pill" href="#my_Team"><a class="nav-link" href="\toTeam">My Team</a></a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link dropdown-toggle btn btn-primary" href="#" role="button" data-bs-toggle="dropdown" style="color: white;margin-left: 5px">{{ myUser.username }}</a>
+          </li>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">My profile</a></li>
+            <li><a class="dropdown-item" href="/signout" >Sign out</a></li>
+          </ul>
           {% endif %}
 
 

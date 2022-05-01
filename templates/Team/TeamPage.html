@@ -86,20 +86,19 @@
               </div>
   
   
-              {% for task in all_Tasks %}
-              <div class="container p-5 my-5 bg-primary text-white" style="border-radius: 10px;">
-                <div class="d-flex">
-                    <h3 style="margin-bottom: 20px; color: rgb(0, 251, 255);">{{task.title}}</h3>
-                    <h3>For: {{ task.forUser.username }}</h3>
-                </div>
-                <h5>Publish Date: {{task.created_Date}}</h5>
-                <p>{{task.description}}</p>
-                <h4>DeadLine: {{task.deadLine}} Days</h4>
-                <h4>Days left: {{task.dyas_Left}} Days</h4>
-                
+            <div class="row">
+            {% for task in all_Tasks %}
+              <div class="container col-sm-6 p-5 my-5 bg-primary text-white" style="border-radius: 10px;width: 40%;height: 500px;">
+                    <h3><y>Title: </y> {{task.title}}</h3>
+                    <h5><y>For: </y>{{ task.forUser.username }}</h5>
+                <h5><y>Publish Date: </y>{{task.created_Date}}</h5>
+                <p class="card p-2" style="height: 50%; background-color: rgb(14, 108, 181);">{{task.description}}</p>
+                <h4><y>DeadLine: </y>{{task.deadLine}} Days</h4>
+                <h4><y style="color: rgb(250, 95, 95);">Time left: </y>{{task.dyas_Left}} Days</h4>
+                <button type="button" class="btn btn-info" style="width: 30%;">Details</button>
               </div>
               {% endfor %}
-  
+           </div>
   
   
             </div>
