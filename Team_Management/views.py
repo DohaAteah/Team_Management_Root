@@ -286,6 +286,7 @@ def addTask(request):
 
 def taskDetails(request, tid):
     theTask = Task.objects.get(id=tid)
+    myProfile = Profile.objects.filter(owner = request.user)
     new_Team = Team.objects.filter(leader=request.user)
     if new_Team.exists():
       print(new_Team)
@@ -297,7 +298,7 @@ def taskDetails(request, tid):
             new_Team = Team.objects.filter(title = team_ins.title)
             break
 
-    return render(request,"Team/Task_Details.html",{'theTask':theTask,'new_Team':new_Team})
+    return render(request,"Team/Task_Details.html",{'theTask':theTask,'new_Team':new_Team,'myProfile':myProfile,'myUser':request.user})
 
 def taskDelete(request, tid):
   Task.objects.filter(id=tid).delete()
