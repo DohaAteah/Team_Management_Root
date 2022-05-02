@@ -103,7 +103,6 @@
                 
                 <div class="right">
                   <button type="button" class="btn btn-primary m-2"><a class="nav-link text-white p-0" href="/toAddTask">Add task</a></button>
-                  <button type="button" class="btn btn-danger m-2"><a class="nav-link text-white p-0" href="#">Remove task</a></button>
                 </div>
               </div>
   
@@ -111,13 +110,21 @@
             <div class="row">
             {% for task in all_Tasks %}
               <div class="container col-sm-6 p-5 my-5 bg-primary text-white" style="border-radius: 10px;width: 40%;height: 500px;">
-                    <h3><y>Title: </y> {{task.title}}</h3>
-                    <h5><y>For: </y>{{ task.forUser.username }}</h5>
+                <h3><y>Title: </y> {{task.title}}</h3>
+                <h5><y>For: </y>{{ task.forUser.username }}</h5>
                 <h5><y>Publish Date: </y>{{task.created_Date}}</h5>
                 <p class="card p-2" style="height: 50%; background-color: rgb(14, 108, 181);">{{task.description}}</p>
                 <h4><y>DeadLine: </y>{{task.deadLine}} Days</h4>
                 <h4><y style="color: rgb(250, 95, 95);">Time left: </y>{{task.dyas_Left}} Days</h4>
-                <button type="button" class="btn btn-info" style="width: 30%;">Details</button>
+                <div class="d-flex justify-content-between align-items-center">
+                  <button type="button" class="btn btn-info" style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDetails/{{task.id}}">Details</a></button>
+                  {% for team in new_Team %}
+                  {% if user == team.leader %}
+                  <button type="button" class="btn btn-danger style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDelete/{{task.id}}">Delete</a></button>
+                  {% endif %}
+                  {% endfor %}
+                  
+                </div>
               </div>
               {% endfor %}
            </div>
@@ -128,14 +135,22 @@
               <h3 style="color: rgb(3, 67, 67);"><img src="{% static 'img\Tasks.png' %}" alt="" style="width: 50px;margin-right: 10px;">My Tasks</h3>
               <div class="row">
                 {% for my_task in my_Tasks %}
-                  <div class="container col-sm-6 p-5 my-5 bg-primary text-white" style="border-radius: 10px;width: 40%;height: 500px;">
+                  <div class="container col-sm-6 p-5 my-5 bg-primary text-white" style="border-radius: 10px;width: 40%;height: 500px;" >
                         <h3><y>Title: </y> {{my_task.title}}</h3>
                         <h5><y>For: </y>{{ my_task.forUser.username }}</h5>
                     <h5><y>Publish Date: </y>{{my_task.created_Date}}</h5>
                     <p class="card p-2" style="height: 50%; background-color: rgb(14, 108, 181);">{{my_task.description}}</p>
                     <h4><y>DeadLine: </y>{{my_task.deadLine}} Days</h4>
                     <h4><y style="color: rgb(250, 95, 95);">Time left: </y>{{my_task.dyas_Left}} Days</h4>
-                    <button type="button" class="btn btn-info" style="width: 30%;">Details</button>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <button type="button" class="btn btn-info" style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDetails/{{my_task.id}}">Details</a></button>
+                      {% for team in new_Team %}
+                      {% if user == team.leader %}
+                      <button type="button" class="btn btn-danger style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDelete/{{my_task.id}}">Delete</a></button>
+                      {% endif %}
+                      {% endfor %}
+                      
+                    </div>                  
                   </div>
                   {% endfor %}
                </div>

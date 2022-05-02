@@ -41,10 +41,6 @@ def signup(request):
     pass1 = request.POST['pswd1']
     pass2 = request.POST['pswd2']
 
-
-
-    
-
     if User.objects.filter(username=uname):
       messages.error(request,"Username is already exist!")
       return redirect('signup')
@@ -301,7 +297,13 @@ def addTask(request):
     new_Task.save()
     return toViewTeam(request)
 
-    
+def taskDetails(request, tid):
+  theTask = Task.objects.get(id=tid)
+  return render(request,"Team/Task_Details.html",{'theTask':theTask})
+
+def taskDelete(request, tid):
+  Task.objects.filter(id=tid).delete()
+  return toViewTeam(request)  
 
 
 
