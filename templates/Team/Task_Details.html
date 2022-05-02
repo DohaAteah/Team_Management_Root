@@ -17,15 +17,20 @@
     <img src="{% static 'img\Details.png' %}" class="m-0 p-0" style="width: 170px;">
   </div>
 
-    <div class="container mt-3 p-5 card bg-light text-black" style="width: 70%;">
-      <h3><y>Title: </y> {{theTask.title}}</h3>
-      <h5><y>For: </y>{{ theTask.forUser.username }}</h5>
-  <h5><y>Publish Date: </y>{{theTask.created_Date}}</h5>
+    <div class="container mt-3 p-5 card bg-light text-black" style="width: 80%;">
+      <h3><t>Title: </t> {{theTask.title}}</h3>
+      <h5><t>For: </t>{{ theTask.forUser.username }}</h5>
+  <h5><t>Publish Date: </t>{{theTask.created_Date}}</h5>
   <p class="card p-2" style="height: 500px; background-color: rgb(149, 232, 232);overflow: hidden;text-overflow: ellipsis;">{{theTask.description}}</p>
-  <h4><y>DeadLine: </y>{{theTask.deadLine}} Days</h4>
-  <h4><y style="color: rgb(250, 95, 95);">Time left: </y>{{theTask.dyas_Left}} Days</h4>
+  <h4><t>DeadLine: </t>{{theTask.deadLine}} Days</h4>
+  <h4><t style="color: rgb(250, 95, 95);">Time left: </t>{{theTask.dyas_Left}} Days</h4>
   <div class="d-flex justify-content-between align-items-center">
+    {% if theTask.is_Done == False %}
     <button type="button" class="btn btn-success" style="width: 50%;"><a class="nav-link text-white p-0" href="/taskApply/{{theTask.id}}">Apply</a></button>
+    {% else %}
+    <br>
+    <h3>Done.</h3>
+    {% endif %}
 
     {% for team in new_Team %}
     {% if user == team.leader %}

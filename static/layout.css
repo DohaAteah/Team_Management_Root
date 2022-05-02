@@ -1,6 +1,9 @@
 y{
     color: rgb(0, 251, 255);
 }
+t{
+    color: rgb(0, 14, 116);
+}
 
 #add_task, #add_member{
     width: 100%;

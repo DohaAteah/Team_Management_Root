@@ -1,16 +1,15 @@
 from datetime import date
-from Team_Management.form import TeamForm,TaskForm
+from Team_Management.form import ProfileForm, TeamForm,TaskForm
 from tkinter.messagebox import NO
 from turtle import title
 from unicodedata import name
 from django.conf import settings
 from django.shortcuts import redirect, render
-from Team_Management.models import Task, Team
+from Team_Management.models import Task, Team,Profile
 from django.utils import timezone
-from django.views.generic import View , TemplateView
-from .models import Task
+from django.views.generic import View
 from django.http import JsonResponse
-from django.contrib.auth.models import User,Group
+from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate ,login,logout
 from myApp import settings
@@ -25,12 +24,26 @@ from django.contrib.auth.context_processors import auth
 
 
 def toHome(request):
-   return render(request , 'Home/index.html',{'myUser':request.user})
+  if request.user.is_authenticated:
+   new_Team = Team.objects.filter(leader=request.user)
+   if new_Team.exists():
+     print(new_Team)
+   else:
+    Team1 = Team.objects.all()
+    for team_ins in Team1: 
+      for member in team_ins.members.all():
+       if request.user == member:
+          new_Team = Team.objects.filter(title = team_ins.title)
+   myProfile = Profile.objects.filter(owner = request.user)
+   return render(request , 'Home/index.html',{'myUser':request.user,'myProfile':myProfile,'new_Team':new_Team})
+  return render(request , 'Home/index.html',{'myUser':request.user})
+
 
 class TaskJson(View):
     def get(self , *args  , **kwargs):
       tasks = list(Task.objects.values())
       return JsonResponse({'data' : tasks}, safe=False)
+
 
 def signup(request):
   if request.method == "POST":
@@ -66,6 +79,11 @@ def signup(request):
        my_user.last_name = lname
        my_user.is_active = False
        my_user.save()
+
+       new_profile = Profile(title = uname,owner = my_user)
+       new_profile.save()
+
+
        messages.success(request,"We have send you a confirmation email, please check your email.")
     # email 
        subject = "Welcome to CONTROL"
@@ -93,12 +111,12 @@ def signup(request):
        email.fail_silently = True
        email.send()
 
-
        return redirect('login')
-    
     
 
   return render(request, "auth/signup.html")      
+
+
 
 
 def log_in(request):
@@ -157,20 +175,10 @@ def create_team(request):
       new_Team.title = request.POST['title']
       new_Team.description = request.POST['description']
       new_Team.leader = request.user
-      new_Team.members.add(request.user)
 
       new_Team.save()
 
-      #set group name
-      g1, created = Group.objects.get_or_create(name=new_Team.title)
-
-      if not created:
-        print(request,"error")
-      #autopopulate / assign author to new team
-      g1.user_set.add(new_Team.leader)
-
-      #debug (hopefully print: Team Name, Key, Creator, Members
-      print(new_Team)
+      new_Team.members.add(request.user)
       return redirect('toViewTeam')  
               
 
@@ -212,26 +220,37 @@ def toViewTeam(request):
      ldr = team.leader
     all_Tasks = Task.objects.filter(author = ldr).order_by('created_Date')
     my_Tasks = Task.objects.filter(forUser = request.user,author = ldr)
+    myProfile = Profile.objects.filter(owner = request.user)
     if all_Tasks.exists():
        for task in all_Tasks:
         task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
     if my_Tasks.exists():
        for myTask in my_Tasks:
         myTask.dyas_Left = myTask.deadLine - (date.today() - myTask.created_Date).days
-    return render(request, "Team/TeamPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks, 'my_Tasks': my_Tasks,'myUser': request.user}) 
+    return render(request, "Team/TeamPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks, 'my_Tasks': my_Tasks,'myUser': request.user,'myProfile':myProfile}) 
   else:
       messages.error(request, "You must login first!")
       return render(request,"HomePage.html") 
 
 def toAddMembers(request):
-      return render(request, "Team/Add_Members.html") 
+  new_Team = Team.objects.filter(leader=request.user)
+  if new_Team.exists():
+     print(new_Team)
+  else:
+    Team1 = Team.objects.all()
+    for team_ins in Team1: 
+      for member in team_ins.members.all():
+       if request.user == member:
+          new_Team = Team.objects.filter(title = team_ins.title)
+  myProfile = Profile.objects.filter(owner = request.user)
+  return render(request, "Team/Add_Members.html",{'myUser':request.user,'myProfile':myProfile,'new_Team':new_Team}) 
 
 def addMembers(request):
   if request.method == "POST":
     newUser = request.POST['addUser']
     if newUser=="admin":
         messages.error(request, "Can't add admin!")
-        return render(request,"Team/Add_Members.html")
+        return redirect('toAddMembers')
     
     if User.objects.filter(username = newUser).exists():
         the_Team = Team.objects.filter(leader=request.user)
@@ -241,14 +260,14 @@ def addMembers(request):
           for member in team.members.all():
             if user == member:
               messages.error(request, "User already in the team!")
-              return render(request,"Team/Add_Members.html")
+              return redirect('toAddMembers')
         else:
              team.members.add(user)
              messages.error(request, "Successfully added!")
-             return render(request,"Team/Add_Members.html")
+             return redirect('toAddMembers')
     else:
         messages.error(request, "User not found!")
-        return render(request,"Team/Add_Members.html") 
+        return redirect('toAddMembers')
 
 
 def addTask(request):

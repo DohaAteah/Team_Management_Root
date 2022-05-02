@@ -4,10 +4,16 @@
 {% load static %}
 <body>
 
-  <div id="add_task" class="animate">
-                  
-    <div class="container mt-3 p-5 card bg-light text-black" style="width: 50%;height: 80%;">
-      <h3>Add task</h3>
+
+<!-- The Modal -->
+<div class="modal fade" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Add task</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         {% for message in messages %}
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
         <strong>Alert: </strong> {{message}}
@@ -16,7 +22,11 @@
         </button>
         </div>
         {% endfor %}
-      <form action="/addTask" class="was-validated" method="post">
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <form action="/addTask" class="was-validated" method="post">
           {% csrf_token %}
         <div class="mb-3 mt-3">
           <label for="title" class="form-label">Title: </label>
@@ -43,9 +53,18 @@
       <center><button type="submit" class="btn btn-primary btn-lg" style="width: 90%;">Add</button></center>
       <br>
     </form>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+      </div>
+
     </div>
-      
   </div>
+</div>
+
+
     <div class="container mt-3">
 
         <!-- Nav pills -->
@@ -102,14 +121,10 @@
                       {% for team in new_Team %}
                     <h1>Welcome to {{ team.title }} </h1>
                     <h3>Leader: {{ team.leader.username }}</h3>
+                    <h3> {{ team.description }} </h3>
+
                     {% endfor %}
                     {% endif%}
-                    {% if team_ins %}
-                    {% for team in team_ins %}
-                    <h1>Welcome to {{ team.title }} </h1>
-                    <h3>Leader: {{ team.leader.username }}</h3>
-                    {% endfor %}
-                    {% endif %}
                   </div>
           
             </div>
@@ -179,9 +194,14 @@
                        </ul>
                     </ul>
     
-
-                  <button onclick="document.getElementById('add_task').style.display='block'" type="button" class="btn btn-primary m-2">Add task</button>
-                </div>
+                    {% for team in new_Team %}
+                    {% if user == team.leader %}
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                      Add Task
+                    </button>
+                    {% endif %}
+                    {% endfor %}
+                  </div>
               </div>
 
 
@@ -244,8 +264,13 @@
                        </ul>
                     </ul>
     
-
-                  <button onclick="document.getElementById('add_task').style.display='block'" type="button" class="btn btn-primary m-2">Add task</button>
+                    {% for team in new_Team %}
+                    {% if user == team.leader %}
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                      Add Task
+                    </button>
+                   {%endif%} 
+                  {%endfor%}
                 </div>
               </div>
 
@@ -291,7 +316,13 @@
                       <li><a id="sec3" class="dropdown-item nav-link" data-bs-toggle="pill" href="#doneMyTasks" >Completed Tasks</a></li>
                      </ul>
                   </ul>
-    
+                  {% for team in new_Team %}
+                  {% if user == team.leader %}
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                    Add Task
+                  </button>
+                 {%endif%} 
+                {%endfor%}
 
                 </div>
               </div>
@@ -343,7 +374,13 @@
                      </ul>
                   </ul>
     
-
+                  {% for team in new_Team %}
+                  {% if user == team.leader %}
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                    Add Task
+                  </button>
+                 {%endif%} 
+                {%endfor%}
                 </div>
               </div>
 
