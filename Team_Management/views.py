@@ -171,7 +171,7 @@ def create_team(request):
 
       #debug (hopefully print: Team Name, Key, Creator, Members
       print(new_Team)
-      return toViewTeam(request)
+      return redirect('toViewTeam')  
               
 
   else:
@@ -182,13 +182,13 @@ def toTeam(request):
    if request.user.is_authenticated:
      team = Team.objects.filter(leader=request.user)
      if team.exists():
-       return toViewTeam(request)
+        return redirect('toViewTeam')  
      else:
          Team1 = Team.objects.all()
          for team_ins in Team1: 
            for member in team_ins.members.all():
              if request.user == member:
-              return toViewTeam(request)
+               return redirect('toViewTeam')  
           
          return toCreateTeam(request)
 
@@ -248,35 +248,8 @@ def addMembers(request):
              return render(request,"Team/Add_Members.html")
     else:
         messages.error(request, "User not found!")
-        return render(request,"Team/Add_Members.html")
+        return render(request,"Team/Add_Members.html") 
 
-def toRemoveMembers(request):
-      return render(request, "Team/Remove_Members.html") 
-
-def removeMembers(request):
-  if request.method == "POST":
-    removeUser = request.POST['removeUser']
-    if removeUser=="admin":
-        messages.error(request, "Can't remove admin!")
-        return render(request,"Team/Remove_Members.html")
-    
-    if User.objects.filter(username = removeUser).exists():
-        the_Team = Team.objects.filter(leader=request.user)
-        user = User.objects.get(username = removeUser)
-        
-        for team in the_Team:
-          for member in team.members.all():
-            if user == member:
-              team.members.remove(user)
-              messages.success(request, "Successfully removed!")
-              return render(request,"Team/Remove_Members.html")
-        else:
-            messages.error(request, "User is not in the team!")
-            return render(request,"Team/Add_Members.html")
-
-    else:
-        messages.error(request, "User not found!")
-        return render(request,"Team/Remove_Members.html")
 
 def addTask(request):
   if request.method == "POST": 
@@ -290,7 +263,7 @@ def addTask(request):
     new_Task.description = request.POST['description']
     new_Task.deadLine = request.POST['deadLine']
     new_Task.save()
-    return toViewTeam(request)
+    return redirect('toViewTeam')  
 
 def taskDetails(request, tid):
     theTask = Task.objects.get(id=tid)
@@ -309,13 +282,13 @@ def taskDetails(request, tid):
 
 def taskDelete(request, tid):
   Task.objects.filter(id=tid).delete()
-  return toViewTeam(request)  
+  return redirect('toViewTeam')  
 
 def memberRemove(request,tm, mem):
   team = Team.objects.get(title = tm)
   user = User.objects.get(username = mem)
   team.members.remove(user)
-  return toViewTeam(request)  
+  return redirect('toViewTeam')  
 
 
 

@@ -58,7 +58,7 @@
           document.getElementById('first').className = 'dropdown-item nav-link'
           document.getElementById('sec').className = 'dropdown-item nav-link'
           ">
-            <div class="nav-link" data-bs-toggle="pill" href="#tasks">
+            <div class="nav-link" data-bs-toggle="pill" href="#">
               <a id="ultask" class="nav-link dropdown-toggle btn btn-primary p-0 m-0" href="#" role="button" data-bs-toggle="dropdown">Tasks</a>
               <ul class="dropdown-menu">
                <ul class=" nav nav-pill" role="tablist">
@@ -122,11 +122,13 @@
                 
                 <h3><img src="{% static 'img\Members.png' %}" alt="" style="width: 50px;margin-right: 10px;">Team members</h3>
                 <div class="d-flex">
-
+                  {% for team in new_Team %}
+                  {% if request.user == team.leader %}
                   <button type="button" class="btn btn-primary m-2"><a class="nav-link text-white p-0" href="/toAddMembers">Add members</a></button>
-                  <button type="button" class="btn btn-danger m-2"><a class="nav-link text-white p-0" href="/toRemoveMembers">Remove members</a></button>
-
+                  {% endif %}
+                  {% endfor %}
                 </div>
+                
 
               </div>
               <br>
@@ -141,10 +143,18 @@
                     <p class="card-text"><strong>Role: </strong> Developer</p>
                     <a href="#" class="btn btn-primary" style="width: 90%;">See Profile</a>
                     <br>
-                    <button type="button" class="btn btn-danger style="width: 40%;"><a class="nav-link text-white p-0" href="/memberRemove/{{team}}/{{member}}">kick out</a></button>
+                    {% if request.user == team.leader %}
+                    <button type="button" onclick="memberDelete()" class="btn btn-danger style="width: 40%;">kick out</button>
+                    {% endif %}
                   </div>
                 </div>
-
+                <script>
+                function memberDelete(){
+                  if (confirm("Are you sure?") == true) {
+                   window.location.href = "/memberRemove/"+"{{team}}/"+"{{member}}";
+                  }   
+                }
+              </script>
                 {% endfor %}
                 {% endfor %}  
               </div>
@@ -193,10 +203,18 @@
                   <button type="button" class="btn btn-info" style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDetails/{{task.id}}">Details</a></button>
                   {% for team in new_Team %}
                   {% if user == team.leader %}
-                  <button type="button" class="btn btn-danger style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDelete/{{task.id}}">Delete</a></button>
+                  <button type="button" onclick="taskDelete()" class="btn btn-danger style="width: 40%;">Delete</button>
+                  
                   {% endif %}
                   {% endfor %}
-                  
+                  <script>
+                    function taskDelete() {
+                      if (confirm("Are you sure?") == true) {
+                       window.location.href = "/taskDelete/"+"{{task.id}}";
+                      }
+                    }
+
+                    </script>
                 </div>
               </div>
               {% endif %}
@@ -204,6 +222,7 @@
            </div>
   
   
+      
             </div>
             
 
