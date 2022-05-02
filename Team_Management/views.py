@@ -25,7 +25,7 @@ from django.contrib.auth.context_processors import auth
 
 
 def toHome(request):
-   return render(request , 'Home/index.html')
+   return render(request , 'Home/index.html',{'myUser':request.user})
 
 class TaskJson(View):
     def get(self , *args  , **kwargs):
@@ -120,8 +120,7 @@ def log_in(request):
    return render(request, "auth/login.html")      
  
 def toLogIn(request):
-  myUser = request.user
-  return render(request, "HomePage.html",{'myUser': myUser})
+  return toHome(request)
     
 
 def signout(request):
@@ -144,7 +143,7 @@ def activate(request, uidb64, token):
     return redirect(request, "activationFailed.html")
 
 def toCreateTeam(request):
-       return render(request, "Team/Create_Team.html") 
+       return render(request, "Team/Create_Team.html",{'myUser':request.user}) 
 
 def create_team(request):
   if request.method == "POST":
@@ -219,7 +218,7 @@ def toViewTeam(request):
     if my_Tasks.exists():
        for myTask in my_Tasks:
         myTask.dyas_Left = myTask.deadLine - (date.today() - myTask.created_Date).days
-    return render(request, "Team/TeamPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks, 'my_Tasks': my_Tasks}) 
+    return render(request, "Team/TeamPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks, 'my_Tasks': my_Tasks,'myUser': request.user}) 
   else:
       messages.error(request, "You must login first!")
       return render(request,"HomePage.html") 
@@ -239,11 +238,11 @@ def addMembers(request):
         user = User.objects.get(username = newUser)
         
         for team in the_Team:
-          #for member in team.members.all():
-          #  if user == member:
-          #    messages.error(request, "User already in the team!")
-          #    return render(request,"Team/Add_Members.html")
-          #  else:
+          for member in team.members.all():
+            if user == member:
+              messages.error(request, "User already in the team!")
+              return render(request,"Team/Add_Members.html")
+        else:
              team.members.add(user)
              messages.error(request, "Successfully added!")
              return render(request,"Team/Add_Members.html")
@@ -266,22 +265,18 @@ def removeMembers(request):
         user = User.objects.get(username = removeUser)
         
         for team in the_Team:
-          #for member in team.members.all():
-          #  if user == member:
-          #    messages.error(request, "User already in the team!")
-          #    return render(request,"Team/Add_Members.html")
-          #  else:
-             team.members.remove(user)
-             messages.success(request, "Successfully removed!")
-             return render(request,"Team/Remove_Members.html")
+          for member in team.members.all():
+            if user == member:
+              team.members.remove(user)
+              messages.success(request, "Successfully removed!")
+              return render(request,"Team/Remove_Members.html")
+        else:
+            messages.error(request, "User is not in the team!")
+            return render(request,"Team/Add_Members.html")
+
     else:
         messages.error(request, "User not found!")
         return render(request,"Team/Remove_Members.html")
-
-        
-def toAddTask(request):
-  ourTeam = Team.objects.filter(leader = request.user)
-  return render(request, "Team/Add_Task.html",{'ourTeam':ourTeam}) 
 
 def addTask(request):
   if request.method == "POST": 
@@ -298,13 +293,29 @@ def addTask(request):
     return toViewTeam(request)
 
 def taskDetails(request, tid):
-  theTask = Task.objects.get(id=tid)
-  return render(request,"Team/Task_Details.html",{'theTask':theTask})
+    theTask = Task.objects.get(id=tid)
+    new_Team = Team.objects.filter(leader=request.user)
+    if new_Team.exists():
+      print(new_Team)
+    else:
+       our_Team = Team.objects.all()
+       for team_ins in our_Team: 
+         for member in team_ins.members.all():
+           if request.user == member:
+            new_Team = Team.objects.filter(title = team_ins.title)
+            break
+
+    return render(request,"Team/Task_Details.html",{'theTask':theTask,'new_Team':new_Team})
 
 def taskDelete(request, tid):
   Task.objects.filter(id=tid).delete()
   return toViewTeam(request)  
 
+def memberRemove(request,tm, mem):
+  team = Team.objects.get(title = tm)
+  user = User.objects.get(username = mem)
+  team.members.remove(user)
+  return toViewTeam(request)  
 
 
 
