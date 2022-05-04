@@ -17,30 +17,47 @@
     <img src="{% static 'img\Details.png' %}" class="m-0 p-0" style="width: 170px;">
   </div>
 
-    <div class="container mt-3 p-5 card bg-light text-black" style="width: 80%;">
+    <div class="shadow-lg container mt-3 mb-5 p-5 card bg-primary text-white" style="width: 80%;height: 80%;">
       <div class="d-flex justify-content-between align-items-center">
-       <h3><t>Title: </t> {{theTask.title}}</h3>
+       <h1><i>{{theTask.title}}</i></h1>
        {% if theTask.is_Done == True %}
        <img src="{% static 'img\Task_Pass.png' %}" alt="" style="width: 10%;">
        {%endif%}
       </div>
-     <h5><t>For: </t>{{ theTask.forUser.username }}</h5>
-  <h5><t>Publish Date: </t>{{theTask.created_Date}}</h5>
-  <p class="card p-2" style="height: 300px; background-color: rgb(149, 232, 232);overflow: hidden;text-overflow: ellipsis;">{{theTask.description}}</p>
-  <h4><t>DeadLine: </t>{{theTask.deadLine}} Days</h4>
-  <h4><t style="color: rgb(250, 95, 95);">Time left: </t>{{theTask.dyas_Left}} Days</h4>
+      <hr style="width: 100%;">
+
+
+      <div class="d-flex align-items-center justify-content-between">
+        <h4><t>For: </t>{{ theTask.forUser.first_name }} {{ theTask.forUser.last_name }}</h4>
+        <h4><t>Publish Date: </t>{{theTask.created_Date}}</h4>    
+      </div>
+      <hr style="width: 100%;">
+
+  <p class="shadow-lg card bg-light p-2" style="color: rgb(0, 0, 132) ;height: 80%;overflow: hidden;text-overflow: ellipsis;text-align: start;font-size: 20px;">{{theTask.description}}</p>
+  <div class="d-flex align-items-center justify-content-between">
+    <h4>DeadLine: <bl style="color: rgb(231, 231, 255);">{{theTask.deadLine}} Days</bl></h4>
+    <h4>Time left: <r>{{theTask.dyas_Left}} Days</r></h4>  
+  </div>
+  <br>
+  <br>
   <div class="d-flex justify-content-between align-items-center">
     {% if theTask.is_Done == False %}
-    <button type="button" class="btn btn-success" style="width: 50%;"><a class="nav-link text-white p-0" href="/taskApply/{{theTask.id}}">Apply</a></button>
+    <button type="button" class="btn btn-info btn-lg" style="width: 30%;"><a class="nav-link text-white p-0" href="/taskApply/{{theTask.id}}">Apply</a></button>
     {% endif %}
     <br>
     {% for team in new_Team %}
     {% if user == team.leader %}
-    <button type="button" class="btn btn-danger style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDelete/{{theTask.id}}">Delete</a></button>
+    <button type="button" onclick="taskDelete()" class="btn btn-danger btn-lg" style="width: 40%;">Delete</button>
     {% endif %}
     {% endfor %}
+    <script>
+      function taskDelete() {
+        if (confirm("Are you sure?") == true) {
+         window.location.href = "/taskDelete/"+"{{theTask.id}}";
+        }
+      }
+    </script>
   </div>
-
 
 </body>
 

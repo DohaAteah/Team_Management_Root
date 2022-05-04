@@ -25,6 +25,7 @@ from django.contrib.auth.context_processors import auth
 
 def toHome(request):
   if request.user.is_authenticated:
+   tasksNum = Task.objects.filter(forUser = request.user).count()
    new_Team = Team.objects.filter(leader=request.user)
    if new_Team.exists():
      print(new_Team)
@@ -35,7 +36,11 @@ def toHome(request):
        if request.user == member:
           new_Team = Team.objects.filter(title = team_ins.title)
    myProfile = Profile.objects.filter(owner = request.user)
-   return render(request , 'Home/index.html',{'myUser':request.user,'myProfile':myProfile,'new_Team':new_Team})
+   myProfile.doneTasksNum = tasksNum
+   return render(request , 'Home/index.html',{'myUser':request.user,
+   'myProfile':myProfile,
+   'new_Team':new_Team
+   })
   return render(request , 'Home/index.html',{'myUser':request.user})
 
 

@@ -23,9 +23,9 @@
     <div style="display: flex;align-items: center;justify-content: end;width: 50%;">
         {% if user.is_authenticated %}
       
-            <a class="nav-link dropdown-toggle btn btn-primary" href="#" role="button" data-bs-toggle="dropdown" style="color: white;margin-left: 5px">{{ myUser.username }}</a>
+            <a class="nav-link dropdown-toggle btn btn-primary btn-md" href="#" role="button" data-bs-toggle="dropdown" style="color: white;margin-left: 5px">{{ myUser.username }}</a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#"> <button class="btn btn-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#profile">
+              <li><a class="dropdown-item" href="#"> <button class="btn btn-light w-100 h-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#profile">
                My profile
               </button>
             </a></li>
@@ -50,17 +50,20 @@
       </div>
       <div class="offcanvas-body">
         <h1 class="offcanvas-title">{{prof.owner.first_name}} {{prof.owner.last_name}}</h1>
+        <hr style="width: 80%;">
+        <h4>Role: {{prof.role}}</h4>
         {% if new_Team.exists %}
         {% for tm in new_Team %}
-        <h3>Team: {{tm.title}}</h3>
+        <h4>Team: {{tm.title}}</h4>
         {% endfor %}
         {% else %}
-        <h3>No Team</h3>
+        <h4>No Team</h4>
         {% endif %}
-        <br><h4>Rate: {{prof.rated}} %</h4>
-        <h4>Tasks done: {{prof.doneTasksNum}}</h4>
-        <h4>Projects done: {{prof.doneProjectsNum}}</h4>
-        <br><br>
+        <hr style="width: 80%;">
+        <h4>Rate: <bl>{{prof.rated}}%</bl></h4>
+        <h4>Tasks done: <bl>{{prof.doneTasksNum}}</bl></h4>
+        <h4>Projects done: <bl>{{prof.doneProjectsNum}}</bl></h4>
+        <br>
         <a class="nav-link btn btn-primary text-white" href="#">Edit my profile</a>
       </div>
       {% endfor %}

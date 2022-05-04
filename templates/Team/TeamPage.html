@@ -176,14 +176,15 @@
               
             </div>
 
-            <div id="tasks" class="container tab-pane fade"><br>
+            <div id="tasks" class="container-fluid tab-pane fade"><br>
+                
               <div class="top" style="display: flex;align-items: center;justify-content: space-between;">
                 <div class="left">
                   <h3 style="color: rgb(3, 67, 67);"><img src="{% static 'img\Tasks.png' %}" alt="" style="width: 50px;margin-right: 10px;">Team Tasks | In-Progress</h3>
                 </div>
                 
-                <div class="right d-flex">
-                    <a type="button" class="dropdown-toggle btn btn-primary m-2" href="#" role="button" data-bs-toggle="dropdown" onclick="
+                <div class="right d-flex align-items-center">
+                    <a type="button" class="dropdown-toggle btn btn-primary btn-lg m-2" href="#" role="button" data-bs-toggle="dropdown" onclick="
                     document.getElementById('first2').className = 'dropdown-item nav-link';
                     document.getElementById('sec2').className = 'dropdown-item nav-link'
                     ">Show</a>
@@ -196,7 +197,7 @@
     
                     {% for team in new_Team %}
                     {% if user == team.leader %}
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                    <button type="button" class="btn btn-primary btn-lg m-2" data-bs-toggle="modal" data-bs-target="#myModal">
                       Add Task
                     </button>
                     {% endif %}
@@ -205,26 +206,32 @@
               </div>
 
 
+              <hr style="width: 80;">
 
   
   
-            <div class="row">
+            <div class="row slideanim mb-3">
             {% for task in all_Tasks %}
             {% if task.is_Done == False %}
 
-              <div class="container col-sm-6 p-5 my-5 bg-primary text-white" style="border-radius: 10px;width: 40%;height: 500px;">
-                <h3><y>Title: </y> {{task.title}}</h3>
+              <div class="shadow-lg container col-sm-5 col-xs-12 p-3 mt-3 bg-primary text-white" style="border-radius: 5px;">
+                <h3><i>{{task.title}}</i></h3>
+                <hr style="width: 80;">
                 <h5><y>For: </y>{{ task.forUser.username }}</h5>
                 <h5><y>Publish Date: </y>{{task.created_Date}}</h5>
-                <p class="card p-2" style="height: 50%; background-color: rgb(14, 108, 181);overflow: hidden;text-overflow: ellipsis;">{{task.description}}</p>
-                <h4><y>DeadLine: </y>{{task.deadLine}} Days</h4>
-                <h4><y style="color: rgb(250, 95, 95);">Time left: </y>{{task.dyas_Left}} Days</h4>
-                <div class="d-flex justify-content-between align-items-center">
+                <hr style="width: 80;">
+                <div class="card p-2" style="height: 88px; background-color: rgb(14, 108, 181);overflow: hidden;text-overflow: ellipsis;">{{task.description}}</div>
+                <hr style="width: 80;">
+                <div class="d-flex align-items-center justify-content-between">
+                <h5><y>DeadLine: </y>{{task.deadLine}} Days</h4>
+                <h5><y style="color: rgb(250, 95, 95);">Time left: </y>{{task.dyas_Left}} Days</h4>       
+                </div>
+                <hr style="width: 80;">
+               <div class="d-flex justify-content-between align-items-center">
                   <button type="button" class="btn btn-info" style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDetails/{{task.id}}">Details</a></button>
                   {% for team in new_Team %}
                   {% if user == team.leader %}
-                  <button type="button" onclick="taskDelete()" class="btn btn-danger style="width: 40%;">Delete</button>
-                  
+                  <button type="button" onclick="taskDelete()" class="btn btn-danger" style="width: 40%;">Delete</button>
                   {% endif %}
                   {% endfor %}
                   <script>
@@ -233,8 +240,7 @@
                        window.location.href = "/taskDelete/"+"{{task.id}}";
                       }
                     }
-
-                    </script>
+                  </script>
                 </div>
               </div>
               {% endif %}
@@ -253,7 +259,7 @@
                 </div>
                 
                 <div class="right d-flex">
-                    <a type="button" class="dropdown-toggle btn btn-primary m-2" href="#" role="button" data-bs-toggle="dropdown" onclick="
+                    <a type="button" class="dropdown-toggle btn btn-primary btn-lg m-2" href="#" role="button" data-bs-toggle="dropdown" onclick="
                     document.getElementById('first2').className = 'dropdown-item nav-link';
                     document.getElementById('sec2').className = 'dropdown-item nav-link'
                     ">Show</a>
@@ -266,7 +272,7 @@
     
                     {% for team in new_Team %}
                     {% if user == team.leader %}
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                    <button type="button" class="btn btn-primary btn-lg m-2" data-bs-toggle="modal" data-bs-target="#myModal">
                       Add Task
                     </button>
                    {%endif%} 
@@ -290,6 +296,18 @@
                 <h4><y style="color: rgb(250, 95, 95);">Time left: </y>{{task.dyas_Left}} Days</h4>
                 <div class="d-flex justify-content-between align-items-center">
                   <button type="button" class="btn btn-info" style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDetails/{{task.id}}">Details</a></button>
+                  {% for team in new_Team %}
+                  {% if user == team.leader %}
+                  <button type="button" onclick="taskDelete()" class="btn btn-danger" style="width: 40%;">Delete</button>
+                  {% endif %}
+                  {% endfor %}
+                  <script>
+                    function taskDelete() {
+                      if (confirm("Are you sure?") == true) {
+                       window.location.href = "/taskDelete/"+"{{task.id}}";
+                      }
+                    }
+                  </script>
                   
                 </div>
               </div>
@@ -306,7 +324,7 @@
                 </div>
                 
                 <div class="right d-flex">
-                  <a type="button" class="dropdown-toggle btn btn-primary m-2" href="#" role="button" data-bs-toggle="dropdown" onclick="
+                  <a type="button" class="dropdown-toggle btn btn-primary btn-lg m-2" href="#" role="button" data-bs-toggle="dropdown" onclick="
                   document.getElementById('first3').className = 'dropdown-item nav-link';
                   document.getElementById('sec3').className = 'dropdown-item nav-link'
                   ">Show</a>
@@ -318,7 +336,7 @@
                   </ul>
                   {% for team in new_Team %}
                   {% if user == team.leader %}
-                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                  <button type="button" class="btn btn-primary btn-lg m-2" data-bs-toggle="modal" data-bs-target="#myModal">
                     Add Task
                   </button>
                  {%endif%} 
@@ -343,7 +361,7 @@
                       <button type="button" class="btn btn-info" style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDetails/{{my_task.id}}">Details</a></button>
                       {% for team in new_Team %}
                       {% if user == team.leader %}
-                      <button type="button" class="btn btn-danger style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDelete/{{my_task.id}}">Delete</a></button>
+                      <button type="button" class="btn btn-danger" style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDelete/{{my_task.id}}">Delete</a></button>
                       {% endif %}
                       {% endfor %}
                       
@@ -363,7 +381,7 @@
                 </div>
                 
                 <div class="right d-flex">
-                  <a type="button" class="dropdown-toggle btn btn-primary m-2" href="#" role="button" data-bs-toggle="dropdown" onclick="
+                  <a type="button" class="dropdown-toggle btn btn-primary btn-lg m-2" href="#" role="button" data-bs-toggle="dropdown" onclick="
                   document.getElementById('first4').className = 'dropdown-item nav-link';
                   document.getElementById('sec4').className = 'dropdown-item nav-link'
                   ">Show</a>
@@ -376,7 +394,7 @@
     
                   {% for team in new_Team %}
                   {% if user == team.leader %}
-                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                  <button type="button" class="btn btn-primary btn-lg m-2" data-bs-toggle="modal" data-bs-target="#myModal">
                     Add Task
                   </button>
                  {%endif%} 
@@ -398,7 +416,19 @@
                     <h4><y style="color: rgb(250, 95, 95);">Time left: </y>{{my_task.dyas_Left}} Days</h4>
                     <div class="d-flex justify-content-between align-items-center">
                       <button type="button" class="btn btn-info" style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDetails/{{my_task.id}}">Details</a></button>
-
+                      {% for team in new_Team %}
+                  {% if user == team.leader %}
+                  <button type="button" onclick="taskDelete()" class="btn btn-danger" style="width: 40%;">Delete</button>
+                  {% endif %}
+                  {% endfor %}
+                  <script>
+                    function taskDelete() {
+                      if (confirm("Are you sure?") == true) {
+                       window.location.href = "/taskDelete/"+"{{task.id}}";
+                      }
+                    }
+                  </script>
+                  
                       
                     </div>                  
                   </div>

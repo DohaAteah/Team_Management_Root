@@ -36,6 +36,7 @@ class Team(models.Model):
 class Profile(models.Model):
     title = models.CharField(max_length=100)
     owner = models.OneToOneField(User, related_name='owner' , on_delete= models.CASCADE)
+    role = models.CharField(max_length=100,default="None")
     photo = models.ImageField(upload_to='static/cover-images/%y/%m/%d/',default = 'static/cover-images/default/Login.png')
     rated = models.IntegerField(default=0)
     doneTasksNum = models.IntegerField(default=0)
