@@ -3,30 +3,25 @@
 {% block Home %}
 
 
-    <div class="container mt-3">
+    <div>
+      <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white">
+        <div class="position-sticky">
+          <div class="list-group list-group-flush mx-3 mt-4">
+            <a href="#home" class="list-group-item list-group-item-action py-2 ripple active" aria-current="true">
+              <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Home</span>
+            </a>
+            {% if user.is_authenticated %}
+            <a href="\toTeam" class="list-group-item list-group-item-action py-2 ripple">
+              <i class="fas fa-chart-area fa-fw me-3"></i><span>My Team</span>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </nav>
 
-        <!-- Nav pills -->
-        <ul class="nav nav-pills bg-light" role="tablist" style="border-radius: 15px;padding: 10px;">
-          <li class="nav-item">
-            <a  data-bs-toggle="pill" href="#home"><a class="nav-link active" href="\">Home</a></a>
-          </li>
-          {% if user.is_authenticated %}
-          <li class="nav-item">
-            <a data-bs-toggle="pill" href="#my_Team"><a class="nav-link" href="\toTeam">My Team</a></a>
-          </li>
-
-          {% endif %}
-
-
-        </ul>
 
     <script src="../static/main.js"></script>
       
-    <div>
-      {% block content %}
-      {% endblock %}
-      
-    </div>
 
 
     {% endblock Home %}

@@ -5,6 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control</title>
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw=="
+        crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -12,34 +17,82 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     {% load static %}
     <link rel="png" href="{% static 'img\Logo.png' %}">
-    <link rel="stylesheet" href="{% static 'layout.css' %}">    
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">   
+    <link rel="stylesheet" href="{% static 'css/mdb.min.css' %}"> 
 </head>
 <body>
-    <div class="container mt-3 d-flex justify-content-between">
-        <div style="width: 50%;">
-            <h2 style="color: rgb(3, 67, 67);"><a href="/"><img src="{% static 'img\Logo.png' %}" alt="" style="width: 70px"></a> Control</h2>
+  
+  <header>
+  <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+    <!-- Container wrapper -->
+    <div class="container-fluid">
+      <!-- Toggle button -->
+      <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#sidebarMenu"
+        aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
 
-        </div>
-    <div style="display: flex;align-items: center;justify-content: end;width: 50%;">
-        {% if user.is_authenticated %}
-      
-            <a class="nav-link dropdown-toggle btn btn-primary btn-md" href="#" role="button" data-bs-toggle="dropdown" style="color: white;margin-left: 5px">{{ myUser.username }}</a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#"> <button class="btn btn-light w-100 h-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#profile">
-               My profile
-              </button>
-            </a></li>
-              <li><a class="dropdown-item" href="/signout" >Sign out</a></li>
-            </ul>
+      <!-- Brand -->
+        <h2 class="mx-3" style="color: rgb(3, 67, 67);"><a href="/"><img src="{% static 'img\Logo.png' %}" alt="" style="width: 50px"></a> Control</h2>
+
+      <!-- Search form -->
+      <form class="d-none d-md-flex input-group w-auto m-0">
+        <input autocomplete="off" type="search" class="form-control rounded"
+          placeholder='Type something' style="min-width: 225px" />
+        <span class="input-group-text border-0"><i class="fas fa-search"></i></span>
+      </form>
+  
+  <ul class="navbar-nav ms-auto d-flex flex-row">
+    <!-- Notification dropdown -->
+    <li class="nav-item dropdown">
+      <a class="nav-link me-3 me-lg-0 dropdown-toggle hidden-arrow" href="#" id="navbarDropdownMenuLink"
+        role="button" data-mdb-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-bell"></i>
+        <span class="badge rounded-pill badge-notification bg-danger">1</span>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+        <li><a class="dropdown-item" href="#">Some news</a></li>
+        <li><a class="dropdown-item" href="#">Another news</a></li>
+        <li>
+          <a class="dropdown-item" href="#">Something else</a>
+        </li>
+      </ul>
+    </li>
+
+
+
+
+    <!-- Avatar -->
+    <li class="nav-item dropdown">
+      {% if user.is_authenticated %}
+      <a class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center" href="#"
+      id="navbarDropdownMenuLink" role="button" data-mdb-toggle="dropdown" aria-expanded="false">
+      {{ myUser.username }}
+    </a>
+      <ul class="dropdown-menu fade">
+        <li><a class="dropdown-item" href="#" data-bs-toggle="offcanvas" data-bs-target="#profile">
+         My profile
+           </a>
+        </li>
+        <li><a class="dropdown-item" href="/signout" >Sign out</a></li>
+      </ul>
+      {% else %}
+      <div class="d-flex">
+          <a class="nav-link btn btn-primary btn-lg"  href="/login" style="color: white;">Login</a>
+      <a class="nav-link btn btn-primary btn-lg"  href="/signup" style="color: white;margin-left: 5px">Sign Up</a>
          
-        {% else %}
-    <a class="nav-link btn btn-primary"  href="/login" style="color: white;">Login</a>
-    <a class="nav-link btn btn-primary"  href="/signup" style="color: white;margin-left: 5px">Sign Up</a>
-    {% endif %}
-    </div>
-    <br>
-    </div>
+      </div>
+ {% endif %}
+      </li>
+    </ul>
 
+    <br>
+
+
+  </nav>
+  
+  <!-- Navbar -->
+</header>
     {% if user.is_authenticated %}
     
     <div class="offcanvas offcanvas-start" id="profile">
@@ -72,43 +125,41 @@
     {% endif %}
 
 
-    <div>
+    <main  style="margin-top: 70px;">
         {% block Home %}
         {% endblock %}
         
-      </div>
+    </main>
 
-    <div>
+    <main style="margin-top: 70px;" >
         {% block signup %}
         {% endblock %}
         
-      </div>
+      </main>
 
-      <div>
+      <main style="margin-top: 70px;">
         {% block login %}   
         {% endblock %}
         
-      </div>
-      <div>
+      </main>
+      <main style="margin-top: 70px;">
         {% block createTeam %}
                 {% endblock %}
         
-      </div>
-      <div>
+      </main>
+      <main style="margin-top: 70px;">
         {% block TeamPage %}
         {% endblock %}
         
-      </div>
+      </main>
       
-      <div>
+      <main style="margin-top: 70px;">
         {% block addMembers %}
                 {% endblock %}
         
-      </div>
+      </main>
 
-    
-
-
-      
-</body>
+      <script type="text/javascript" src="{% static 'js/mdb.min.js' %}"></script>
+      <script type="text/javascript" src="{% static 'js/admin.js' %}"></script>
+    </body>
 </html>

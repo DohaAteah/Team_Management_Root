@@ -65,48 +65,46 @@
 </div>
 
 
-    <div class="container mt-3">
+    <div class="container">
 
-        <!-- Nav pills -->
-        <ul class="nav nav-pills bg-light" role="tablist" style="border-radius: 15px;padding: 10px;">
-          <li class="nav-item" onclick="document.getElementById('ultask').style.color='blue'">
-            <a class="nav-link active" data-bs-toggle="pill" href="#teamInfo">Team Info</a>
-          </li>
-          <li class="nav-item" onclick="
-          document.getElementById('ultask').style.color='white';
-          document.getElementById('first').className = 'dropdown-item nav-link'
-          document.getElementById('sec').className = 'dropdown-item nav-link'
-          ">
-            <div class="nav-link" data-bs-toggle="pill" href="#">
-              <a id="ultask" class="nav-link dropdown-toggle btn btn-primary p-0 m-0" href="#" role="button" data-bs-toggle="dropdown">Tasks</a>
-              <ul class="dropdown-menu">
-               <ul class=" nav nav-pill" role="tablist">
-                <li><a id="first" class="dropdown-item nav-link" data-bs-toggle="pill" href="#tasks">All Tasks</a></li>
-                <li><a id="sec" class="dropdown-item nav-link" data-bs-toggle="pill" href="#myTasks" >My Tasks</a></li>
-               </ul>
-            </ul>
+      <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white">
+        <div class="position-sticky">
+          <div class="list-group nav nav-pills list-group-flush mx-3 mt-4">
+            <a href="\"  class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
+              <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Home</span>
+            </a>
+            <a href="#teamInfo" data-bs-toggle="pill" class="list-group-item list-group-item-action py-2 ripple active" aria-current="true">
+              <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Team Info</span>
+            </a>
+
+            <a href="#tasks" data-bs-toggle="pill" class="list-group-item list-group-item-action py-2 ripple" aria-current="true" >
+              All Tasks
+            </a>
+            <a href="#myTasks" data-bs-toggle="pill" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
+              My Tasks
+            </a>
+
+
+            </a>
+            <a href="#projects" data-bs-toggle="pill" class="list-group-item list-group-item-action py-2 ripple " aria-current="true">
+              <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Projects</span>
+            </a>
+            <a href="#members" data-bs-toggle="pill" class="list-group-item list-group-item-action py-2 ripple " aria-current="true">
+              <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Members</span>
+            </a>              
+
+
+
           </div>
-          </li>
+        </div>
+      </nav>
 
-          <li class="nav-item" onclick="document.getElementById('ultask').style.color='blue'">
-            <a class="nav-link" data-bs-toggle="pill" href="#projects">Projects</a>
-          </li>
-          <li class="nav-item" onclick="document.getElementById('ultask').style.color='blue'">
-            <a class="nav-link" data-bs-toggle="pill" href="#members">Members</a>
-          </li>
-          <li class="nav-item" onclick="document.getElementById('ultask').style.color='blue'">
-            <a  data-bs-toggle="pill" href="\"><a class="nav-link" href="\">Back to home</a></a>
-          </li>
-
-
-
-        </ul>
 
       
 
 
         <div class="tab-content">
-            <div id="teamInfo" class="container tab-pane active"><br>
+            <div id="teamInfo" class="animated fade-in-left container tab-pane active"><br>
                 <div class="container mt-3 p-5 card bg-light text-black">
                     <h3 class="text-primary">Team details</h3>
                       {% for message in messages %}
@@ -210,11 +208,11 @@
 
   
   
-            <div class="row slideanim mb-3">
+            <div class="row  mb-3">
             {% for task in all_Tasks %}
             {% if task.is_Done == False %}
 
-              <div class="shadow-lg container col-sm-5 col-xs-12 p-3 mt-3 bg-primary text-white" style="border-radius: 5px;">
+              <div class="animated fade-in-left shadow-lg container col-sm-5 col-xs-12 p-3 mt-3 bg-primary text-white" style="border-radius: 5px;">
                 <h3><i>{{task.title}}</i></h3>
                 <hr style="width: 80;">
                 <h5><y>For: </y>{{ task.forUser.username }}</h5>
