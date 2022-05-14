@@ -22,5 +22,11 @@ urlpatterns = [
     path('taskDetails/<tid>', views.taskDetails, name="taskDetails"),
     path('taskDelete/<tid>', views.taskDelete, name="taskDelete"),
     path('memberRemove/<tm>/<mem>', views.memberRemove, name="memberRemove"),
+    path('teamRemove/<tm>', views.teamRemove, name="teamRemove"),
+    path('leaveTeam/<tm>/<mem>', views.leaveTeam, name="leaveTeam"),
+    path('JoinTeam/<tm>/<mem>/<id>', views.JoinTeam, name="JoinTeam"),
+    path('RequestReject/<id>', views.RequestReject, name="RequestReject"),
+    path('toViewTeam_Req', views.toViewTeam_Req, name="toViewTeam_Req"),
+
 
 ]

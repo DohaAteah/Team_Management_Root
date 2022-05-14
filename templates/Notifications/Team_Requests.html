@@ -1,0 +1,44 @@
+{% extends "Header.html" %}
+
+{% block TeamRequests %}
+{% load static %}
+
+<div>
+    <center><h1 class="m-0"><i class="fas fa-user-clock fa-fw me-3"></i><span>Team Requests</span></h1><br></center>
+    <hr width="100%">
+    {% if team_req_noty.exists %}
+{% for noty in team_req_noty %}
+<div class="card p-3 m-5">
+
+    <div class="d-flex align-items-center justify-content-between">
+        <p>Team {{noty.teamToJoin}} want you to be one of their team members</p>
+        <div class="d-flex">
+        <button type="button" onclick="reject()" class="btn btn-danger"  style="margin-left: 20px">Reject</button>
+        <button type="button" onclick="apply()" class="btn btn-success" style="margin-left: 20px">Apply</button>
+          
+        </div>
+    </div>
+
+    <script>
+        function apply() {
+          if (confirm("Are you sure?") == true) {
+           window.location.href = "/JoinTeam/"+"{{noty.teamToJoin}}/"+"{{noty.userToJoin}}/"+"{{noty.id}}";
+          }
+        }
+          function reject() {
+           window.location.href = "/RequestReject/"+"{{noty.id}}";
+        }
+    </script>
+    </div>
+
+{% endfor %}
+{% else %}
+
+<h5 class="card m-5 p-3">No requests</h1>
+{%endif%}
+    
+
+</div>
+
+
+{% endblock %}
