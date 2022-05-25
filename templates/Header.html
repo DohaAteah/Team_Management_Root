@@ -8,6 +8,7 @@
         <!-- Font Awesome -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw=="
         crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -21,6 +22,36 @@
     <link rel="stylesheet" href="{% static 'css/mdb.min.css' %}"> 
 </head>
 <body>
+
+
+   <!-- Member Modal -->
+   <div class="modal fade" id="changePhoto">
+    <div class="modal-dialog modal-dialog-centered model-xl">
+      <div class="modal-content">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Change profile photo</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <!-- Modal body -->
+        <div class="modal-body">
+          <center>   
+            <form action="/changePhoto" enctype=multipart/form-data class="was-validated" method="post">
+                {% csrf_token %}
+                <input type="file" accept="img/*" class="form-control" id="img"  name="img" required>
+                <button type="submit" class="btn btn-primary btn-lg">Change</button>
+             </form>
+
+            </center>
+        </div>
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   
   <header>
@@ -50,26 +81,51 @@
       <a class="nav-link me-3 me-lg-0 dropdown-toggle hidden-arrow" href="#" id="navbarDropdownMenuLink"
         role="button" data-mdb-toggle="dropdown" aria-expanded="false">
         <i class="fas fa-bell"></i>
-        <span class="badge rounded-pill badge-notification bg-danger">{% if notyCount > 0 %}{{notyCount}}{%endif%}</span>
+        <span id="notySection" class="badge rounded-pill badge-notification bg-danger"></span>
       </a>
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-        <li><a class="dropdown-item" href="/toViewTeam_Req">Team requests {% if notyCount > 0 %}({{notyCount}}){%endif%}</a></li>
-        <li><a class="dropdown-item" href="#">Another news</a></li>
-        <li>
-          <a class="dropdown-item" href="#">Something else</a>
-        </li>
+        <li><a class="dropdown-item" href="/toViewTeam_Req">Team requests <bl id="notySection2"></bl></a></li>
+        <li><a class="dropdown-item" href="/toViewNotifications">Notifications <bl id="notySection3"></bl></a></li>
       </ul>
     </li>
     {% endif %}
 
-
+    <script>
+      $(document).ready(function(){
+        setInterval(function(){
+          $.ajax({
+        type: "GET",
+        url: "getNoty", 
+        success: function (response) {
+          $("#notySection").empty();
+          $("#notySection2").empty();
+          $("#notySection3").empty();
+          var temp = "";var temp2 = "";var temp3 = "";          
+          if(response.allCount > 0)
+            temp = response.allCount;
+          if(response.teamNoty > 0)
+            temp2 = "("+response.teamNoty+")";
+          if(response.notysCount > 0)
+            temp3 = "("+response.notysCount+")";
+           console.log(response.allCount); 
+           console.log(response.teamNoty); 
+           console.log(response.notysCount);  
+          $("#notySection").append(temp);
+          $("#notySection2").append(temp2);
+          $("#notySection3").append(temp3);
+        }
+      });
+        },2000);
+      })
+     
+    </script>
 
     <!-- Avatar -->
     <li class="nav-item dropdown" style="margin-right: 50px;">
       {% if user.is_authenticated %}
       <a class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center" href="#"
       id="navbarDropdownMenuLink" role="button" data-mdb-toggle="dropdown" aria-expanded="false">
-      {{ myUser.username }}
+      {{ user.username }}
     </a>
       <ul class="dropdown-menu fade">
         <li><a class="dropdown-item" href="#" data-bs-toggle="offcanvas" data-bs-target="#profile">
@@ -80,11 +136,11 @@
       </ul>
       {% else %}
       <div class="d-flex">
-          <a class="nav-link btn btn-primary btn-lg"  href="/login" style="color: white;">
-            <i class="fas fa-user fa-fw me-3"></i><span>Login</span>
+          <a class="nav-link btn btn-primary btn pe-3 ps-3"  href="/login" style="color: white;">
+            <i class="fas fa-user fa-fw me-2"></i><span>Login</span>
           </a>
-      <a class="nav-link btn btn-primary btn-lg"  href="/signup" style="color: white;margin-left: 5px">
-        <i class="fas fa-user-plus fa-fw me-3"></i><span>Sign Up</span>
+      <a class="nav-link btn btn-primary btn ms-3 pe-3 ps-3"  href="/signup" style="color: white">
+        <i class="fas fa-user-plus fa-fw me-2"></i><span>Sign Up</span>
       </a>
          
       </div>
@@ -101,19 +157,25 @@
 </header>
     {% if user.is_authenticated %}
     
-    <div class="offcanvas offcanvas-start" id="profile">
+    <div class="offcanvas offcanvas-start bg-dark text-light" id="profile">
       <div class="offcanvas-header">
-        <img src="../{{myProfile.photo}}" alt="" style="width: 70%;border-radius: 50%;">
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        
+        <button type="button" class="btn-close bg-light " data-bs-dismiss="offcanvas"></button>
+        
       </div>
-      <div class="offcanvas-body">
-        <h1 class="offcanvas-title">{{myProfile.owner.first_name}} {{myProfile.owner.last_name}}</h1>
+      <div class="offcanvas-body ">
+      <center> 
+        <div class="rounded-circle border shadow-lg" style="width: 300px;height: 290px;background: url('../{{myProfile.photo}}');background-position: center;background-size: cover;">        
+            <br><br><br><br><br><br><br><br><br><br>
+            <button type="button" data-bs-toggle="modal" data-bs-target="#changePhoto" class="btn btn-dark text-white rounded w-50 p-1">
+              <i class="fas fa-edit me-2"></i><span>Change photo</span>
+              </button>
+        </div>
+        <h1 class="offcanvas-title mt-3">{{myProfile.owner.first_name}} {{myProfile.owner.last_name}}</h1>
         <hr style="width: 80%;">
         <h4>Role: {{myProfile.role}}</h4>
-        {% if new_Team.exists %}
-        {% for tm in new_Team %}
-        <h4>Team: {{tm.title}}</h4>
-        {% endfor %}
+        {% if new_Team is not None %}
+        <h4>Team: {{new_Team.title}}</h4>
         {% else %}
         <h4>No Team</h4>
         {% endif %}
@@ -121,52 +183,48 @@
         <h4>Rate: <bl>{{myProfile.rated}}%</bl></h4>
         <h4>Tasks done: <bl>{{myProfile.doneTasksNum}}</bl></h4>
         <h4>Projects done: <bl>{{myProfile.doneProjectsNum}}</bl></h4>
-        <br>
-        <a class="nav-link btn btn-primary text-white" href="#">Edit my profile</a>
+
+        </center>
       </div>
     </div>
    
     {% endif %}
 
 
-    <main  style="margin-top: 70px;">
-        {% block Home %}
+    <main>
+        {% block HeadMain %}
         {% endblock %}
-        
     </main>
 
-    <main style="margin-top: 70px;margin-right: 200px;" >
-        {% block signup %}
-        {% endblock %}
-        
-      </main>
+    <div id="main3">
+      {% block AuthMain %}
+      {% endblock %}
+    </div>
 
-      <main style="margin-top: 70px;margin-right: 200px;">
-        {% block login %}   
-        {% endblock %}
-        
-      </main>
-      <main style="margin-top: 70px;margin-right: 200px;">
-        {% block createTeam %}
-                {% endblock %}
-        
-      </main>
-      <main style="margin-top: 70px;">
-        {% block TeamPage %}
-        {% endblock %}
-        
-      </main>
+    <main>
+      {% block HeadMainTeam %}
+      {% endblock %} 
+    </main>
+
+    <main>
+      {% block HeadContent %}
+      {% endblock %} 
+    </main>
       
-      <main style="margin-top: 70px;margin-right: 200px;">
-        {% block addMembers %}
-                {% endblock %}
-        
-      </main>
-      <main style="margin-top: 90px;margin-right: 200px;">
-        {% block TeamRequests %}
-        {% endblock %}
-        
-      </main>
+    <footer class="d-flex shadow border align-items-center text-dark justify-content-evenly bg-light w-100" style="height: 50px; position: fixed;bottom: 0;">
+      
+      <h6> &copy; copyright 2022 , All rights reserved | Designed by<hi class="text-primary"> UDTeam</hi></h6>
+    
+      <div>
+            <a href="https://www.facebook.com/" style="color: rgb(32, 135, 191);"><i class="fab fa-facebook"></i></a>
+            <a href="https://twitter.com/" style="color: rgb(32, 135, 191);"><i class="fab fa-twitter"></i></a>
+            <a href="https://myaccount.google.com/" style="color: rgb(32, 135, 191);"><i class="fab fa-google-plus"></i></a>
+            <a href="https://www.pinterest.com/" style="color: rgb(32, 135, 191);"><i class="fab fa-pinterest"></i></a>
+            <a href="https://www.instagram.com/" style="color: rgb(32, 135, 191);"><i class="fab fa-instagram"></i></a>
+      </div>
+    
+    
+    </footer>
 
       <script type="text/javascript" src="{% static 'js/mdb.min.js' %}"></script>
       <script type="text/javascript" src="{% static 'js/admin.js' %}"></script>

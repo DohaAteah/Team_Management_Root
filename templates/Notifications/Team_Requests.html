@@ -1,44 +1,70 @@
 {% extends "Header.html" %}
 
-{% block TeamRequests %}
+{% block AuthMain %}
 {% load static %}
 
-<div>
+<div style="margin-top:100px;">
+
     <center><h1 class="m-0"><i class="fas fa-user-clock fa-fw me-3"></i><span>Team Requests</span></h1><br></center>
     <hr width="100%">
-    {% if team_req_noty.exists %}
-{% for noty in team_req_noty %}
-<div class="card p-3 m-5">
-
-    <div class="d-flex align-items-center justify-content-between">
-        <p>Team {{noty.teamToJoin}} want you to be one of their team members</p>
-        <div class="d-flex">
-        <button type="button" onclick="reject()" class="btn btn-danger"  style="margin-left: 20px">Reject</button>
-        <button type="button" onclick="apply()" class="btn btn-success" style="margin-left: 20px">Apply</button>
-          
+    {% if team_req_noty.exists or team_req_noty2.exists %}
+        {% for noty in team_req_noty %}
+        <div class="card border border-5 border-top-0 border-bottom-0 p-3 m-5">
+            <p class="m-0 p-0" style="opacity: 0.5;">{{noty.created_Date}}</p>
+        <div class="d-flex align-items-center justify-content-between">
+            <p class="m-0"><y class="text-primary">(Team)</y> {{noty.teamToJoin}} want you to be one of their team members</p>
+            <div class="d-flex">
+            <button type="button" onclick="reject()" class="btn btn-danger"  style="margin-left: 20px">Reject</button>
+            <button type="button" onclick="apply()" class="btn btn-success" style="margin-left: 20px">Apply</button>
+            </div>
+            
         </div>
+
+        <script>
+            function apply() {
+            if (confirm("Are you sure?") == true) {
+            window.location.href = "/JoinTeam/"+"{{noty.teamToJoin}}/"+"{{noty.userToJoin}}/"+"{{noty.id}}";
+                }
+                }
+                function reject() {
+                window.location.href = "/RequestReject/"+"{{noty.id}}";
+                }
+        </script>
     </div>
 
-    <script>
-        function apply() {
-          if (confirm("Are you sure?") == true) {
-           window.location.href = "/JoinTeam/"+"{{noty.teamToJoin}}/"+"{{noty.userToJoin}}/"+"{{noty.id}}";
-          }
-        }
-          function reject() {
-           window.location.href = "/RequestReject/"+"{{noty.id}}";
-        }
-    </script>
-    </div>
+    {% endfor %}
+    {% for noty2 in team_req_noty2 %}
+    <div class="card border border-5 border-top-0 border-bottom-0 p-3 m-5">
+        <p class="m-0 p-0" style="opacity: 0.5;">{{noty2.created_Date}}</p>
+        <div class="d-flex align-items-center justify-content-between">
+            <p style="margin: 0px;"><y class="text-primary">(User)</y> {{noty2.userToJoin}} want to join your team</p>
+            <div class="d-flex">
+            <button type="button" onclick="reject()" class="btn btn-danger"  style="margin-left: 20px">Reject</button>
+            <button type="button" onclick="apply()" class="btn btn-success" style="margin-left: 20px">Apply</button>
+            
+            </div>
+            
+        </div>
+        
+        <script>
+            function apply() {
+            if (confirm("Are you sure?") == true) {
+            window.location.href = "/JoinTeam/"+"{{noty2.teamToJoin}}/"+"{{noty2.userToJoin}}/"+"{{noty2.id}}";
+            }
+            }
+            function reject() {
+            window.location.href = "/RequestReject/"+"{{noty2.id}}";
+            }
+        </script>
+        </div>
 
-{% endfor %}
-{% else %}
+    {% endfor %}
+    {% else %}
 
-<h5 class="card m-5 p-3">No requests</h1>
-{%endif%}
-    
+    <center><h5 class="card border border-5 border-top-0 border-bottom-0 m-5 p-3">No requests</h1></center>
+    {%endif%}
+        
 
 </div>
-
 
 {% endblock %}

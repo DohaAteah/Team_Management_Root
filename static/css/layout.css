@@ -13,8 +13,17 @@ body {
   background-color: #fbfbfb;
 }
 @media (min-width: 991.98px) {
-  main {
-    padding-left: 240px;
+  main{
+    padding-left: 100px;
+    margin-left:150px;
+    margin-top: 70px;
+  }
+
+  #main2{
+    margin-top: 0px;
+  }
+  #main3{
+    margin-top: 70px;
   }
 }
 
@@ -34,6 +43,13 @@ body {
   .sidebar {
     width: 100%;
   }
+  #main2,#main3{
+    margin-top: 20px;
+  }
+  main{
+    margin-top: 50px;
+  }
+
 }
 .sidebar .active {
   border-radius: 5px;
@@ -48,3 +64,16 @@ body {
   overflow-x: hidden;
   overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
 }
+
+@keyframes changeColor { 
+  50% {
+color: rgb(25, 0, 255);    
+  }
+  75% {
+color: rgb(102, 176, 241);    
+  }
+  100% {
+    color: rgb(25, 0, 255);    
+      }
+
+  }

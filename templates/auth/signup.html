@@ -1,9 +1,9 @@
 {% extends "Header.html" %}
 
-{% block signup %}
+{% block AuthMain %}
 <body>
 
-    <div class="container p-5 card bg-light text-black" style="width: 70%;">
+    <div class="container p-5 card border border-5 border-top-0 border-bottom-0 bg-light text-black" style="width: 70%;margin-top: 120px;">
         <h3>Signup</h3>
         {% for message in messages %}
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -13,7 +13,7 @@
         </button>
         </div>
         {% endfor %}
-        <form action="/signup" class="was-validated" method="post">
+        <form action="/signup" enctype=multipart/form-data class="was-validated" method="post">
             {% csrf_token %}
           <div class="mb-3 mt-3">
             <label for="uname" class="form-label">Username: *</label>
@@ -44,6 +44,10 @@
             <label for="pwd2" class="form-label">Confirm your password: *</label>
             <input type="password" class="form-control" id="pwd" placeholder="confirm password" name="pswd2" required>
           </div>
+          <div class="mb-3">
+            <label for="img" class="form-label">Choose photo:</label>
+            <input type="file" accept="image/*" class="form-control" id="img"  name="img">
+          </div>
 
         <button type="submit" class="btn btn-primary btn-lg">Signup</button>
         </form>
@@ -52,4 +56,4 @@
 
 </body>
 
-{% endblock signup %}
+{% endblock  %}

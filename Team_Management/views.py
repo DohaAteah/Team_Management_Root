@@ -1,12 +1,12 @@
 from datetime import date
 import profile
-from Team_Management.form import ProfileForm, TeamForm,TaskForm
+from Team_Management.form import ProjectForm, TeamForm,TaskForm
 from tkinter.messagebox import NO
 from turtle import title
 from unicodedata import name
 from django.conf import settings
 from django.shortcuts import redirect, render
-from Team_Management.models import Task, Team,Profile, Team_Request
+from Team_Management.models import  Message, Notification, Project, Task, Team,Profile, Team_Request
 from django.utils import timezone
 from django.views.generic import View
 from django.http import HttpResponse, JsonResponse
@@ -28,34 +28,86 @@ def toHome(request):
     if request.user.username == "admin":
           logout(request)
     if request.user.is_authenticated:
-     profile = Profile.objects.get(owner = request.user)
-     tasksNum = Task.objects.filter(forUser = profile).count()
-     notyCount = Team_Request.objects.filter(userToJoin = profile).count()
-     new_Team = Team.objects.filter(leader=profile)
-     if new_Team.exists():
-      print(new_Team)
-     else:
-      Team1 = Team.objects.all()
-      for team_ins in Team1: 
-       for member in team_ins.members.all():
-        if request.user == member:
-           new_Team = Team.objects.filter(title = team_ins.title)
-      myProfile = Profile.objects.get(owner = request.user)
-      myProfile.doneTasksNum = tasksNum
-      return render(request , 'Home/index.html',{'myUser':request.user,
-      'myProfile':myProfile,
-      'new_Team':new_Team,
-      'notyCount':notyCount
+      new_Team = None
+      profile = Profile.objects.get(owner = request.user)
+      tasksNum = Task.objects.filter(forUser = profile,is_Done = True).count()
+      if Team.objects.filter(leader=profile).exists():
+        new_Team = Team.objects.get(leader=profile)
+      else:
+        Team1 = Team.objects.all()
+        for team_ins in Team1: 
+         for member in team_ins.members.all():
+          if request.user == member:
+            new_Team = Team.objects.get(title = team_ins.title) 
+      profile.doneTasksNum = tasksNum
+      if new_Team is not None:
+              return render(request , 'index.html',{
+      'myProfile':profile,
+      'new_Team':new_Team
       })
-    return render(request , 'Home/index.html',{'myUser':request.user})
+      else:
+        return render(request , 'index.html',{
+      'myProfile':profile
+      })
+    return render(request , 'index.html')
 
-
+def getNoty(request):
+  if request.user.is_authenticated:
+     notyCount2 = 0
+     profile = Profile.objects.get(owner = request.user)
+     notyCount = Team_Request.objects.filter(userToJoin = profile).count()
+     allCount = notyCount
+     new_Team = None
+     if Team.objects.filter(leader=profile).exists():
+        new_Team = Team.objects.get(leader=profile)
+     else:
+        Team1 = Team.objects.all()
+        for team_ins in Team1: 
+          for member in team_ins.members.all():
+           if request.user == member:
+            new_Team = Team.objects.get(title = team_ins.title) 
+     if new_Team is not None:
+      notyCount2 = Team_Request.objects.filter(teamToJoin = new_Team).count()
+      allCount += notyCount2
+     teamNoty = allCount
+     notysCount = Notification.objects.filter(forUser = profile).count()
+     allCount += notysCount
+     return JsonResponse({'allCount': allCount,'notysCount':notysCount,'teamNoty':teamNoty})
 
 class TaskJson(View):
     def get(self , *args  , **kwargs):
       tasks = list(Task.objects.values())
       return JsonResponse({'data' : tasks}, safe=False)
 
+def changePhoto(request):
+  if request.user.is_authenticated:
+    if request.method == "POST":
+      img = request.FILES.get('img')
+      myProfile = Profile.objects.get(owner = request.user)
+      myProfile.photo = img
+      myProfile.save()
+  return redirect('Home')
+
+
+def addMessage(request):
+  if request.user.is_authenticated:
+    value = request.POST['msg']
+    tm = request.POST['tm']
+    prof = Profile.objects.get(owner = request.user)
+    new_msg = Message(title = value, userName = request.user.username, photo = prof.photo)
+    new_msg.save()
+    team = Team.objects.get(title = tm)
+    team.messages.add(new_msg)
+    team.save()
+  return HttpResponse('Success!')
+
+def getMessages(request, tm):
+  if request.user.is_authenticated:
+    team = Team.objects.get(title = tm)
+    prof = Profile.objects.filter(owner = request.user)
+    Msg = team.messages.all()
+    print(Msg)
+    return JsonResponse({"Msg":list(Msg.values())})
 
 def signup(request):
   if request.method == "POST":
@@ -66,6 +118,7 @@ def signup(request):
     role = request.POST['role']
     pass1 = request.POST['pswd1']
     pass2 = request.POST['pswd2']
+    img = request.FILES.get('img')
 
     if User.objects.filter(username=uname):
       messages.error(request,"Username is already exist!")
@@ -77,6 +130,10 @@ def signup(request):
 
     elif len(uname)>10:
       messages.error(request,"Username must be under 10 characters!")
+      return redirect('signup')
+
+    elif len(pass1)<8:
+      messages.error(request,"Password must be at least 8 characters!")
       return redirect('signup')
 
     elif pass1 != pass2:
@@ -94,6 +151,9 @@ def signup(request):
        my_user.save()
 
        new_profile = Profile(title = uname,owner = my_user,role = role)
+       print(img)
+       if(img):
+         new_profile.photo = img 
        new_profile.save()
 
 
@@ -140,18 +200,14 @@ def log_in(request):
       user = authenticate(username=username, password=pass1)
       if user is not None:
         login(request, user)
-        fname = user.first_name
         return redirect('Home')
         
-
       else:
           messages.error(request, "Incorrect information!")
           return redirect('login')
       
    return render(request, "auth/login.html")      
- 
-def toLogIn(request):
-  return toHome(request)
+
     
 
 def signout(request):
@@ -168,13 +224,37 @@ def activate(request, uidb64, token):
   if my_user is not None and generate_token.check_token(my_user,token):
     my_user.is_active = True
     my_user.save()
-    login(request,my_user)
-    return redirect('Home')
+    return render(request,'auth/activationSucess.html')
   else:
-    return redirect(request, "activationFailed.html")
+    return render(request, "auth/activationFailed.html")
 
 def toCreateTeam(request):
-       return render(request, "Team/Create_Team.html",{'myUser':request.user}) 
+  if request.user.is_authenticated:
+    profile = Profile.objects.get(owner = request.user) 
+    new_Team = Team.objects.filter(leader=profile)
+    if new_Team.exists():
+         print(new_Team)
+    else:
+        Team1 = Team.objects.all()
+        for team_ins in Team1: 
+         for member in team_ins.members.all():
+          if request.user == member:
+            new_Team = Team.objects.filter(title = team_ins.title)
+    return render(request, "Team/Create_Team.html",{'new_Team': new_Team,'myProfile':profile}) 
+
+def toJoinTeam(request):
+  if request.user.is_authenticated:
+    profile = Profile.objects.get(owner = request.user) 
+    new_Team = Team.objects.filter(leader=profile)
+    if new_Team.exists():
+         print(new_Team)
+    else:
+        Team1 = Team.objects.all()
+        for team_ins in Team1: 
+         for member in team_ins.members.all():
+          if request.user == member:
+            new_Team = Team.objects.filter(title = team_ins.title)
+    return render(request, "Team/Join_Team.html",{'new_Team': new_Team,'myProfile':profile}) 
 
 def create_team(request):
   if request.method == "POST":
@@ -199,6 +279,32 @@ def create_team(request):
   else:
       print(request,"error")
 
+def join_team(request):
+  if request.method == "POST":
+    teamTitle = request.POST['title']
+    if Team.objects.filter(title = teamTitle).exists():
+      team = Team.objects.get(title = teamTitle)
+      userProf = Profile.objects.get(owner = request.user)
+      if Team_Request.objects.filter(userToJoin = userProf, teamToJoin = team).exists():
+          messages.error(request, "Request Already sent!")
+          return redirect('toJoinTeam')
+      else:
+          joinRequest = Team_Request(userToJoin = userProf, teamToJoin = team)
+          joinRequest.save()
+          messages.error(request, "Request successfully sent!")
+          return redirect('toJoinTeam') 
+    else:
+      messages.error(request, "Team not found!")
+      return redirect('toJoinTeam')
+ 
+              
+
+  else:
+      print(request,"error")
+
+
+
+
 
 def toTeam(request):
    if request.user.is_authenticated:
@@ -213,7 +319,7 @@ def toTeam(request):
              if profile == member:
                return redirect('toViewTeam')  
           
-         return toCreateTeam(request)
+         return render(request,'Team/review.html',{'new_Team': team,'myProfile':profile})
 
 
 
@@ -221,30 +327,73 @@ def toTeam(request):
 def toViewTeam(request):
   if request.user.is_authenticated:
     myProfile = Profile.objects.get(owner = request.user)
-    new_Team = Team.objects.filter(leader=myProfile)
-    if new_Team.exists():
-      print(new_Team)
+    if Team.objects.filter(leader=myProfile).exists():
+        new_Team = Team.objects.get(leader=myProfile)
     else:
        our_Team = Team.objects.all()
        for team_ins in our_Team: 
          for member in team_ins.members.all():
            if myProfile == member:
-            new_Team = Team.objects.filter(title = team_ins.title)
+            new_Team = Team.objects.get(title = team_ins.title)
             break
-
-    for team in new_Team:
-     ldr = team.leader
-    all_Tasks = Task.objects.filter(author = ldr).order_by('created_Date')
-    my_Tasks = Task.objects.filter(forUser = myProfile,author = ldr)
-    if all_Tasks.exists():
-       for task in all_Tasks:
-        task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
-    if my_Tasks.exists():
-       for myTask in my_Tasks:
-        myTask.dyas_Left = myTask.deadLine - (date.today() - myTask.created_Date).days
-    return render(request, "Team/TeamPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks, 'my_Tasks': my_Tasks,'myUser': request.user,'myProfile':myProfile}) 
+    if new_Team is not None:
+      all_Projects = Project.objects.filter(team = new_Team).order_by('started_Date')
+      if all_Projects.exists():
+        for project in all_Projects:
+          values = 0
+          value = 0
+          project.dyas_Left = project.deadLine - (date.today() - project.started_Date).days
+          for tasks in Task.objects.filter(project = project):
+            value = tasks.progress[:-1]
+            value = int('0' + value)
+            values += value
+          if Task.objects.filter(project = project).count():
+            values = values/Task.objects.filter(project = project).count()
+          values = str(values)
+          values = values+"%"
+          project.progress = values
+          project.save()
+      
+      return render(request, "Team/TeamPage.html", {'new_Team': new_Team,'all_Projects': all_Projects,'myProfile':myProfile}) 
+    else:
+      return redirect('Home')
   else:
-      return render(request,"HomePage.html") 
+      return redirect('Home')
+
+def toViewProject(request, pid):
+  if request.user.is_authenticated:
+    project = Project.objects.get(id = pid)
+    values = 0
+    value = 0
+    for tasks in Task.objects.filter(project = project):
+          value = tasks.progress[:-1]
+          value = int(value)
+          values += value
+    if Task.objects.filter(project = project).count():
+            values = values/Task.objects.filter(project = project).count()
+    values = str(values)
+    values = values+"%"
+    project.progress = values
+    project.save()
+    myProfile = Profile.objects.get(owner = request.user)
+    new_Team = project.team
+    for member in new_Team.members.all():
+          if member == myProfile:
+            ldr = new_Team.leader
+            all_Tasks = Task.objects.filter(author = ldr, project= project).order_by('created_Date')
+            my_Tasks = Task.objects.filter(forUser = myProfile, project= project).order_by('created_Date')
+            if all_Tasks.exists():
+              for task in all_Tasks:
+                if task.is_Done == False:
+                  task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
+            if my_Tasks.exists():
+              for task in my_Tasks:
+                if task.is_Done == False:
+                  task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
+            return render(request, "Team/ProjectPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks,'my_Tasks': my_Tasks,'myProfile':myProfile,'project':project})  
+    return redirect('Home')
+  else:
+      return redirect('Home')
 
 def toAddMembers(request):
   profile = Profile.objects.get(owner = request.user)
@@ -258,7 +407,7 @@ def toAddMembers(request):
        if request.user == member:
           new_Team = Team.objects.filter(title = team_ins.title)
   myProfile = Profile.objects.filter(owner = request.user)
-  return render(request, "Team/Add_Members.html",{'myUser':request.user,'myProfile':myProfile,'new_Team':new_Team}) 
+  return render(request, "Team/Add_Members.html",{'myProfile':myProfile,'new_Team':new_Team}) 
 
 def addMembers(request):
   if request.method == "POST":
@@ -269,8 +418,7 @@ def addMembers(request):
         messages.error(request, "Can't add admin!")
         return redirect('toAddMembers')
     
-    if User.objects.filter(username = newUser).exists():
-        profile = Profile.objects.get(owner = request.user)
+    if User.objects.filter(username = newUser).exists():  
         the_Team = Team.objects.filter()
         user = User.objects.get(username = newUser)
         userProf = Profile.objects.get(owner = user)
@@ -295,22 +443,49 @@ def addMembers(request):
         return redirect('toAddMembers')
 
 
-def addTask(request):
-  if request.method == "POST": 
-    form = TaskForm(request.POST)
-    new_Task = form.save(commit=False)
+def addTask(request, pid):
+  if request.method == "POST":
     profile = Profile.objects.get(owner = request.user)
-    new_Task.author = profile
-    new_Task.title = request.POST['title']
-    uname = request.POST['forUser']
-    user = User.objects.get(username = uname)
-    userProfile = Profile.objects.get(owner = user)
-    new_Task.forUser = userProfile
-    new_Task.description = request.POST['description']
-    new_Task.deadLine = request.POST['deadLine']
+    project = Project.objects.get(id = pid)
+    if project.team.leader == profile:
+      form = TaskForm(request.POST)
+      new_Task = form.save(commit=False)
+      new_Task.author = profile
+      new_Task.project = project
+      new_Task.title = request.POST['title']
+      uname = request.POST['forUser']
+      user = User.objects.get(username = uname)
+      userProfile = Profile.objects.get(owner = user)
+      new_Task.forUser = userProfile
+      new_Task.description = request.POST['description']
+      new_Task.deadLine = request.POST['deadLine']
+      team = Team.objects.get(leader = profile)
+      new_Task.team = team
+      depend = request.POST['depend']
+      if depend is not None and depend != "":
+        dependOnTask = Task.objects.get(id = depend)
+        if dependOnTask is not None:
+          new_Task.dependsOn = dependOnTask
+      new_Task.save()
+      new_noty = Notification(title = "There is a new task for you. |  Project name: "+new_Task.project.title+" | Task number: "+str(new_Task.id) ,forUser = new_Task.forUser)
+      new_noty.save()
+      print(new_noty.title)
+      return redirect('toViewProject',pid) 
+    else:
+      return redirect('Home') 
+
+def addProject(request):
+  if request.method == "POST": 
+    form = ProjectForm(request.POST)
+    new_Project = form.save(commit=False)
+    profile = Profile.objects.get(owner = request.user)
     team = Team.objects.get(leader = profile)
-    new_Task.team = team
-    new_Task.save()
+    new_Project.team = team
+    new_Project.title = request.POST['title']
+    new_Project.description = request.POST['description']
+    new_Project.deadLine = request.POST['deadLine']
+    
+    new_Project.save()
     return redirect('toViewTeam')  
 
 def taskDetails(request, tid):
@@ -327,10 +502,16 @@ def taskDetails(request, tid):
             new_Team = Team.objects.filter(title = team_ins.title)
             break
 
-    return render(request,"Team/Task_Details.html",{'theTask':theTask,'new_Team':new_Team,'myProfile':myProfile,'myUser':request.user})
+    return render(request,"Team/Task_Details.html",{'theTask':theTask,'new_Team':new_Team,'myProfile':myProfile})
 
 def taskDelete(request, tid):
-  Task.objects.filter(id=tid).delete()
+  profile = Profile.objects.get(owner = request.user)
+  pid = Task.objects.get(id = tid).project.id
+  Task.objects.filter(id=tid, author = profile).delete()
+  return redirect('toViewProject',pid)  
+
+def projectDelete(request, pid):
+  Project.objects.filter(id=pid).delete()
   return redirect('toViewTeam')  
 
 def memberRemove(request,tm, mem):
@@ -350,21 +531,72 @@ def leaveTeam(request,tm, mem):
   return redirect('Home')
 
 def toViewTeam_Req(request):
-  prof = Profile.objects.get(owner = request.user)
-  team_req_noty = Team_Request.objects.filter(userToJoin = prof)
-  return render(request,"Notifications/Team_Requests.html",{'team_req_noty':team_req_noty,'myProfile':prof,'myUser':request.user})
+  if request.user.is_authenticated:
+    prof = Profile.objects.get(owner = request.user)
+    team_req_noty = Team_Request.objects.filter(userToJoin = prof)
+    team_req_noty2 = None
+    if Team.objects.filter(leader = prof):
+      team = Team.objects.get(leader = prof)
+      team_req_noty2 = Team_Request.objects.filter(teamToJoin = team)
+    return render(request,"Notifications/Team_Requests.html",{'team_req_noty':team_req_noty,'team_req_noty2':team_req_noty2,'myProfile':prof})
+  else:
+    return redirect('Home')
+
+def toViewNotifications(request):
+  if request.user.is_authenticated:
+    prof = Profile.objects.get(owner = request.user)
+    notifications = Notification.objects.filter(forUser = prof)
+    return render(request,"Notifications/Notification.html",{'notifications':notifications,'myProfile':prof})
+  else:
+    return redirect('Home')
+
 
 
 def JoinTeam(request,tm, mem, id):
-  team = Team.objects.get(title = tm)
-  user = Profile.objects.get(title = mem)
-  team.members.add(user)
-  Team_Request.objects.get(id = id).delete()
-  return redirect('toViewTeam')
-
-def RequestReject(request, id):
+  if request.user.is_authenticated:
+    team = Team.objects.get(title = tm)
+    user = Profile.objects.get(title = mem)
+    team.members.add(user)
     Team_Request.objects.get(id = id).delete()
     return redirect('toViewTeam_Req')
+
+def RequestReject(request, id):
+  if request.user.is_authenticated:
+    Team_Request.objects.get(id = id).delete()
+    return redirect('toViewTeam_Req')
+
+def removeNoty(request, id):
+  if request.user.is_authenticated:
+    Notification.objects.get(id = id).delete()
+    return redirect('toViewNotifications')
+
+def saveTaskChanges(request, tid, pValue,pid):
+  if request.user.is_authenticated:
+    project = Project.objects.get(id = pid)
+    task = Task.objects.get(id = tid)
+    task.progress = pValue
+    task.save()
+    return redirect('toViewProject',project.id)
+  else:
+    return redirect('Home')
+
+def finishTask(request, pValue,tid ,pid):
+  if request.user.is_authenticated:
+    project = Project.objects.get(id = pid)
+    task = Task.objects.get(id = tid)
+    task.progress = pValue
+    task.is_Done = True
+    task.finishedDate = date.today()
+    for task2 in Task.objects.filter(project = project):
+      if task2.dependsOn == task:
+        task2.dependsOn = None
+        task2.created_Date = date.today()
+        task2.save()
+    task.save()
+    return redirect('toViewProject',project.id)
+  else:
+    return redirect('Home')
+
   
 
 

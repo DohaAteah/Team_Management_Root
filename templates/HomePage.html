@@ -1,33 +1,36 @@
 {% extends "Header.html" %}
 
-{% block Home %}
+{% block HeadMain %}
 
 
     <div>
       <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white">
         <div class="position-sticky">
           <div class="list-group list-group-flush mx-3 mt-4">
-            <a href="#home" class="list-group-item list-group-item-action py-2 ripple active" aria-current="true">
+            <a href="/" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
               <i class="fas fa-home fa-fw me-3"></i><span>Home</span>
             </a>
             {% if user.is_authenticated %}
             <a href="\toTeam" class="list-group-item list-group-item-action py-2 ripple">
-              <i class="fas fa-chart-area fa-fw me-3"></i><span>My Team</span>
+              <i class="fas fa-chart-area fa-fw me-3"></i><span>Team</span>
             </a>
             {% endif %}
           </div>
         </div>
       </nav>
 
-      <main style="margin-top: 70px;">
-        {% block content %}
+      <br>
+      <div id="main2">
+        {% block HomeContent %}
         {% endblock %}
-      </main>
+      </div>
+   
+
 
 
     <script src="../static/main.js"></script>
       
 
 
-    {% endblock Home %}
+    {% endblock %}
 

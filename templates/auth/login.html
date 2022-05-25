@@ -1,9 +1,9 @@
 {% extends "Header.html" %}
 
-{% block login %}
-<body>
+{% block AuthMain %}
 
-    <div class="container p-5 card bg-light text-black" style="width: 70%;">
+
+  <div class="container p-5 card border border-5 border-top-0 border-bottom-0 bg-light text-black" style="width: 70%;margin-top: 120px;">
         <h3>Login</h3>
           {% for message in messages %}
           <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -29,9 +29,8 @@
           </div>
         <button type="submit" class="btn btn-primary btn-lg">Login</button>
         </form>
-      </div>
+  </div>
 
 
-</body>
 
-{% endblock login %}
+{% endblock  %}

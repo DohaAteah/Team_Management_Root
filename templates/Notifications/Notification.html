@@ -1,0 +1,36 @@
+{% extends "Header.html" %}
+
+{% block AuthMain %}
+{% load static %}
+
+<div style="margin-top:100px;">
+
+    <center><h1 class="m-0"><i class="fas fa-user-clock fa-fw me-3"></i><span>Notifications</span></h1><br></center>
+    <hr width="100%">
+    {% if notifications.exists %}
+        {% for noty in notifications %}
+        <div class="card border border-5 border-top-0 border-bottom-0 p-3 m-5">
+       <div class="d-flex align-items-center justify-content-between">
+              <p class="m-0 p-0" style="opacity: 0.5;">{{noty.created_Date}}</p>
+            <button type="button" onclick="removeNoty()" class="btn btn-danger p-2">x</button>
+          
+            
+        </div>
+       <p class="m-0">{{noty.title}}</p>
+
+    </div>
+    <script>
+        function removeNoty() {
+        window.location.href = "/removeNoty/"+"{{noty.id}}";
+        }
+    </script>
+    {% endfor %}
+    {% else %}
+
+    <center><h5 class="card border border-5 border-top-0 border-bottom-0 m-5 p-3">No notifications</h1></center>
+    {%endif%}
+        
+
+</div>
+
+{% endblock %}

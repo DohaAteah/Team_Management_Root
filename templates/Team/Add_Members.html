@@ -1,9 +1,8 @@
 {% extends "Header.html" %}
 
-{% block addMembers %}
-<body>
+{% block AuthMain %}
 
-    <div class="container p-5 card bg-light text-black" style="width: 40%;">
+    <div class="container p-5 card border border-5 border-top-0 border-bottom-0 bg-light text-black" style="width: 70%;margin-top: 120px;">
         <h3>Add members</h3>
           {% for message in messages %}
           <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -19,11 +18,18 @@
             <label for="addUser" class="form-label">Username:</label>
             <input type="text" class="form-control" id="addUser" placeholder="Enter username" name="addUser" required>
           </div>
-        <button type="submit" class="btn btn-primary btn-lg">Add</button>
-        </form>
+          <div class="d-flex align-items-center justify-content-between">
+            
+        <button type="submit" class="btn btn-primary btn">Add</button>
+        <a href="\toTeam" class="btn btn-primary">
+          <i class="fas fa-chart-area fa-fw me-3"></i><span>Back to team</span>
+        </a>
+        
+      </div>  
+      </form>
+
       </div>
 
 
-</body>
 
-{% endblock addMembers %}
+{% endblock %}

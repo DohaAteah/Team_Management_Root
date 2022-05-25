@@ -1,18 +1,18 @@
 {% extends "Header.html" %}
 
-{% block TeamPage %}
+{% block HeadMainTeam %}
 {% load static %}
-<body>
 
 
-<!-- The Modal -->
-<div class="modal fade" id="addTaskModal">
+
+<!-- Add Project Modal -->
+<div class="modal fade" id="addProjectModal">
   <div class="modal-dialog">
     <div class="modal-content">
 
       <!-- Modal Header -->
       <div class="modal-header">
-        <h4 class="modal-title">Add task</h4>
+        <h4 class="modal-title">Add Project</h4>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         {% for message in messages %}
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -26,21 +26,11 @@
 
       <!-- Modal body -->
       <div class="modal-body">
-        <form action="/addTask" class="was-validated" method="post">
+        <form action="/addProject" class="was-validated" method="post">
           {% csrf_token %}
         <div class="mb-3 mt-3">
           <label for="title" class="form-label">Title: </label>
           <input type="text" class="form-control" id="title" placeholder="Enter title" name="title" required>
-        </div>
-        <div class="mb-3 mt-3">
-          <label for="forUser" class="form-label">For User: </label>
-          <select class="form-select" id="sel1" name="forUser">
-            {% for team in new_Team %}
-            {% for member in team.members.all %}
-            <option>{{ member.owner.username }}</option>
-            {% endfor %}
-            {% endfor %}
-          </select>          
         </div>
         <div class="mb-3 mt-3">
           <label for="description" class="form-label">Description: </label>
@@ -48,7 +38,7 @@
         </div>
         <div class="mb-3 mt-3">
           <label for="deadLine" class="form-label">Deadline: </label>
-          <input type="number" id="deadLine" name="deadLine" min="1" max="30" required>          
+          <input type="number" id="deadLine" name="deadLine" min="1" width="50px" required>          
         </div>
       <center><button type="submit" class="btn btn-primary btn-lg" style="width: 90%;">Add</button></center>
       <br>
@@ -75,28 +65,21 @@
               <i class="	fas fa-info fa-fw me-3"></i><span>Team Info</span>
             </a>
 
-            <a href="#tasks" data-bs-toggle="pill" class="list-group-item list-group-item-action py-2 ripple" aria-current="true" >
-              <i class="fas fa-tasks fa-fw me-3"></i>All Tasks
-            </a>
-            <a href="#myTasks" data-bs-toggle="pill" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
-              <i class="fas fa-clipboard fa-fw me-3"></i> My Tasks
-            </a>
-            
-
             </a>
             <a href="#projects" data-bs-toggle="pill" class="list-group-item list-group-item-action py-2 ripple " aria-current="true">
               <i class="fas fa-chart-bar fa-fw me-3"></i><span>Projects</span>
             </a>
+            <a href="#chat" data-bs-toggle="pill" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
+              <i class="fas fa-comments fa-fw me-3"></i>Chat</a>
+            
             <a href="#members" data-bs-toggle="pill" class="list-group-item list-group-item-action py-2 ripple " aria-current="true">
               <i class="fas fa-users fa-fw me-3"></i><span>Members</span>
-            </a>              
-            <a href="\"  class="list-group-item list-group-item-action py-2 ripple" aria-current="true" style="top: 400px;">
-              <i class="fas fa-chevron-left fa-fw me-3"></i><span>Back Home</span>
-            </a>
-
-
+            </a>             
           </div>
         </div>
+        <a href="\"  class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
+          <i class="fas fa-chevron-left fa-fw me-3"></i><span>Back Home</span>
+        </a>
       </nav>
 
 
@@ -105,26 +88,29 @@
 
         <div class="tab-content">
             <div id="teamInfo" class="animated fade-in-left container tab-pane active"><br>
-                <div class="container mt-3 p-5 card bg-light text-black">
-                    <h3 class="text-primary">Team details</h3>
-                      {% for message in messages %}
-                      <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                      <strong>Alert: </strong> {{message}}
-                      <button class="btn-close" data-bs-dismiss="alert">      
-                      <span aria-hidden="true">&times;</span> 
-                      </button>
-                      </div>
-                      {% endfor %}
-                      {% if new_Team %}
-                      {% for team in new_Team %}
-                    <h1>Welcome to {{ team.title }} </h1>
-                    <h3>Leader: {{ team.leader.owner.username }}</h3>
-                    <h3> {{ team.description }} </h3>
+              <center><div class="container mt-3 p-5 card border border-5 border-top-0 border-bottom-0  bg-light text-black">
+                {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Alert: </strong> {{message}}
+                <button class="btn-close" data-bs-dismiss="alert">      
+                <span aria-hidden="true">&times;</span> 
+                </button>
+                </div>
+                {% endfor %}
+                
+                      
+                <h1 class="text-primary p-0 m-0">Welcome to {{ new_Team.title }} </h1>
+                <hr width="100%">
+                      
+                 
+                    <h3>Leader: {{ new_Team.leader.owner.username }}</h3>
+                    <br>
+                    <p> {{ new_Team.description }} </p>
                     <br><br>
-                    {% if myProfile == team.leader %}
-                    <button type="button" onclick="teamDelete()" class="btn btn-danger" style="width: 40%;">Delete The Team</button>
+                    {% if myProfile == new_Team.leader %}
+                    <center><button type="button" onclick="teamDelete()" class="btn btn-danger w-25">Delete The Team</button></center>
                     {% else %}
-                    <button type="button" onclick="teamLeave()" class="btn btn-danger" style="width: 40%;">Leave The Team</button>
+                    <center><button type="button" onclick="teamLeave()" class="btn btn-danger w-25">Leave The Team</button></center>
                     {% endif %}
 
                    <script>
@@ -135,70 +121,19 @@
                     }
                     function teamLeave(){
                       if (confirm("Are you sure?") == true) {
-                       window.location.href = "/leaveTeam/"+"{{team}}"+"/{{myProfile}}";
+                       window.location.href = "/leaveTeam/"+"{{new_Team}}"+"/{{myProfile}}";
                       }   
                     }
                       </script>
-                    {% endfor %}
-                    {% endif%}
-                  </div>
+
+                  </div></center>
           
             </div>
             <div id="projects" class="container tab-pane fade"><br>
-              <h3><img src="{% static 'img\Projects.png' %}" alt="" style="width: 50px;margin-right: 10px;">Projects</h3>
-              <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
-            </div>
-            <div id="members" class="container tab-pane fade"><br>
-              <div class="d-flex justify-content-between align-items-center">
-                
-                <h3><img src="{% static 'img\Members.png' %}" alt="" style="width: 50px;margin-right: 10px;">Team members</h3>
-                <div class="d-flex">
-                  {% for team in new_Team %}
-                  {% if myProfile == team.leader %}
-                  <a class="btn btn-primary m-2" href="/toAddMembers">Add members</a>
-                  {% endif %}
-                  {% endfor %}
-                </div>
-                
-
-              </div>
-              <br>
-              <br>
-              <div class="row">
-                {% for team in new_Team %}
-                {% for member in team.members.all %}
-                <div class="card col-sm-5 m-2" style="width:250px">
-                  <img class="card-img-top" src="{% static 'img\member.png' %}" alt="Card image" style="width:100%">
-                  <div class="card-body d-flex align-items-center" style="flex-direction: column;">
-                    <h4 class="card-title">{{member.owner.username}}</h4>
-                    <p class="card-text"><strong>Role: </strong> {{member.role}}</p>
-                    <a href="#" class="btn btn-primary" style="width: 90%;">See Profile</a>
-                    <br>
-                    {% if member == team.leader %}
-                    <p style="color: rgb(255, 0, 0);"><i>LEADER</i></p>
-                    {% elif myProfile == team.leader %}
-                    <button type="button" onclick="memberDelete()" class="btn btn-danger">kick out</button>
-                    {% endif %}
-                  </div>
-                </div>
-                <script>
-                function memberDelete(){
-                  if (confirm("Are you sure?") == true) {
-                   window.location.href = "/memberRemove/"+"{{team}}/"+"{{member}}";
-                  }   
-                }
-              </script>
-                {% endfor %}
-                {% endfor %}  
-              </div>
-              
-            </div>
-
-            <div id="tasks" class="container-fluid tab-pane fade"><br>
-                
+            
               <div class="top" style="display: flex;align-items: center;justify-content: space-between;">
                 <div class="left">
-                  <h3 style="color: rgb(3, 67, 67);"><img src="{% static 'img\Tasks.png' %}" alt="" style="width: 50px;margin-right: 10px;">Team Tasks | In-Progress</h3>
+                  <h3><img src="{% static 'img\Projects.png' %}" alt="" style="width: 50px;margin-right: 10px;">Projects</h3>
                 </div>
                 
                 <div class="right d-flex align-items-center">
@@ -211,18 +146,20 @@
                   </a>
                     <ul class="dropdown-menu">
                      <ul class=" nav nav-pill" role="tablist">
-                      <li><a id="first2" class="dropdown-item nav-link" data-bs-toggle="pill" href="#tasks">In-Progress Tasks</a></li>
-                      <li><a id="sec2" class="dropdown-item nav-link" data-bs-toggle="pill" href="#doneTasks" >Completed Tasks</a></li>
+                        <li><a id="first2" class="dropdown-item nav-link" data-bs-toggle="pill" href="#projects">In-Progress Projects</a></li>
+                        <li><a id="sec2" class="dropdown-item nav-link" data-bs-toggle="pill" href="#doneProjects">Completed Projects</a></li>
                      </ul>
-                  </ul>
+                    </ul>
     
-                    {% for team in new_Team %}
-                    {% if myProfile == team.leader %}
-                    <button type="button" class="btn btn-primary btn m-2" data-bs-toggle="modal" data-bs-target="#addTaskModal">
-                      <i class="fas fa-plus fa-fw me-3"></i><span>Add Task</span>
-                    </button>
-                    {% endif %}
-                    {% endfor %}
+                  
+                    
+                      {% if myProfile == new_Team.leader %}
+                        <button type="button" class="btn btn-primary btn m-2" data-bs-toggle="modal" data-bs-target="#addProjectModal">
+                          <i class="fas fa-plus fa-fw me-3"></i><span>Add Project</span>
+                        </button>
+                      {% endif %}
+                    
+
                   </div>
               </div>
 
@@ -231,282 +168,244 @@
 
 
             <div class="row mb-3">
-            {% for task in all_Tasks %}
-            {% for team in new_Team %}
-            {% if task.team == team and task.is_Done == False %}
+            {% for project in all_Projects %}
+            
+            {% if project.team == new_Team and project.is_Done == False %}
 
-            <div class="shadow card  my-4 col-sm-6 col-xs-12 bg-light text-dark border border-bottom-0" style="max-height: 270px;max-width: 600px;margin-left: 10px;">
-              <div class="card-header">
-                <div class="d-flex justify-content-between">
-                  <p class="card-text"><small class="text-muted">To: {{ task.forUser.owner.username }}</small></p>
-                  <p class="card-text"><small class="text-muted">Starts: {{task.created_Date}}</small></p>
-                 </div>
                 
+              
+            <div class="shadow p-5 card  my-4 col-sm-12 col-xs-12 bg-light text-dark border border-5 border-top-0 border-bottom-0" style="max-width: 95%;margin-left: 10px;">
+              <div class="card-header">
+                <div>  
+                  <h2 class="card-title">{{project.title}}</h2>
+                 </div>
+                <br>
+                {% if  project.is_Done == False %}
+                <div class="progress" style="height:15px;border-radius: 5px;">
+                  <div class="progress-bar" id="projectProgress{{project.id}}" style="width: {% if project.progress == '0.0%' or project.progress == '0%' %}5%{% else %}{{ project.progress }}{% endif %};">{{project.progress}}</div>
+                </div>
+                {% endif %}
+
               </div>
-              <div class="p-3">  
-              <h5 class="card-title" style="height: 30px; overflow: hidden;text-overflow: ellipsis;">{{task.title}}</h5>
-             </div>
+
+              
+              <div class="card-body">
+                <p class="card-text">{{project.description}}</p>
+              </div>
+
               <div class="card-footer">
                 <div class="d-flex justify-content-between">
-                 <p class="card-text"><small class="text-muted">Deadline {{task.deadLine}} Days</small></p>
-                 <p class="card-text"><small class="text-muted">Daysleft {{task.dyas_Left}} Days</small></p>                  
+                 <p class="card-text"><small class="text-muted">Deadline {{project.deadLine}} Days</small></p>
+                 <p class="card-text"><small class="text-muted">Daysleft {{project.dyas_Left}} Days</small></p>                  
                 </div>
-               <div class="d-flex justify-content-between align-items-center">
-                  <button type="button" class="btn btn-info" style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDetails/{{task.id}}">Details</a></button>
-                  {% for team in new_Team %}
-                  {% if myProfile == team.leader %}
-                  <button type="button" onclick="taskDelete()" class="btn btn-danger" style="width: 40%;">Delete</button>
+                <div class="d-flex justify-content-between align-items-center">
+                 <a class="btn btn-info btn-lg w-25" href="/toViewProject/{{project.id}}"><i class="fas fa-info-circle me-3"></i>Details</a>
+                  
+                  
+           
+                  
+                  
+                  {% if myProfile == new_Team.leader %}
+                  <button type="button" onclick="projectDelete()" class="btn btn-danger btn-lg w-25">Cancel</button>
                   {% endif %}
-                  {% endfor %}
+                  
                   <script>
-                    function taskDelete() {
+                    function projectDelete() {
                       if (confirm("Are you sure?") == true) {
-                       window.location.href = "/taskDelete/"+"{{task.id}}";
+                       window.location.href = "/projectDelete/"+"{{project.id}}";
                       }
                     }
+
                   </script>
                 </div>
   
               </div>
               
             </div>
-
+   
               {% endif %}
-              {% endfor %}
+              
               {% endfor %}
            </div>
-  
-  
-      
-        </div>
             
+            </div>
 
-            <div id="doneTasks" class="container tab-pane fade"><br>
-              <div class="top" style="display: flex;align-items: center;justify-content: space-between;">
-                <div class="left">
-                  <h3 style="color: rgb(3, 67, 67);"><img src="{% static 'img\Tasks.png' %}" alt="" style="width: 50px;margin-right: 10px;">Team Tasks | Completed</h3>
+
+            <div id="members" class="container tab-pane fade"><br>
+              <div class="d-flex justify-content-between align-items-center">
+                
+                <h3><img src="{% static 'img\Members.png' %}" alt="" style="width: 50px;margin-right: 10px;">Team members</h3>
+                <div class="d-flex">
+                  
+                  {% if myProfile == new_Team.leader %}
+                  <a class="btn btn-primary m-2" href="/toAddMembers">Add members</a>
+                  {% endif %}
+                  
                 </div>
                 
-                <div class="right d-flex">
-                    <a type="button" class="dropdown-toggle btn btn-primary m-2" href="#" role="button" data-bs-toggle="dropdown" onclick="
-                    document.getElementById('first2').className = 'dropdown-item nav-link';
-                    document.getElementById('sec2').className = 'dropdown-item nav-link'
-                    "><i class="fas fa-stream fa-fw me-3"></i><span>Show</span>
-                    </a>
-                      <ul class="dropdown-menu">
-                       <ul class=" nav nav-pill" role="tablist">
-                        <li><a id="first2" class="dropdown-item nav-link" data-bs-toggle="pill" href="#tasks">In-Progress Tasks</a></li>
-                        <li><a id="sec2" class="dropdown-item nav-link" data-bs-toggle="pill" href="#doneTasks" >Completed Tasks</a></li>
-                       </ul>
-                    </ul>
-    
-                    {% for team in new_Team %}
-                    {% if myProfile == team.leader %}
-                    <button type="button" class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#addTaskModal">
-                      <i class="fas fa-plus fa-fw me-3"></i><span>Add Task</span>
+
+              </div>
+              <hr style="width: 80;">
+      
+       
+              <div class="row">
+                
+                {% for member in new_Team.members.all %}
+
+                <!-- Member Modal -->
+                <div class="modal fade" id="memberInfoModal{{member.id}}">
+                  <div class="modal-dialog modal-dialog-centered model-xl">
+                    <div class="modal-content">
+
+                      <!-- Modal Header -->
+                      <div class="modal-header">
+                        <h4 class="modal-title">{{member.owner.first_name}} {{member.owner.last_name}}</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                      </div>
+                      <!-- Modal body -->
+                      <div class="modal-body">
+                        <center> <div class="rounded-circle border shadow-lg" style="width: 300px;height: 290px;background: url('../{{member.photo}}');background-position: center;background-size: cover;"></div>
+                          <hr style="width: 80%;">
+                          <h4>Role: {{member.role}}</h4>
+                          <hr style="width: 80%;">
+                          <h4>Rate: <bl>{{member.rated}}%</bl></h4>
+                          <h4>Tasks done: <bl>{{member.doneTasksNum}}</bl></h4>
+                          <h4>Projects done: <bl>{{member.doneProjectsNum}}</bl></h4>
+
+                          </center>
+                      </div>
+                      <!-- Modal footer -->
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card border border-3 border-top-0 border-bottom-0 col-sm-5 m-2" style="width:250px">
+
+                  <div class="card-body d-flex align-items-center" style="flex-direction: column;">
+                    <center><div class="rounded-circle border shadow mt-3" style="width: 150px;height: 140px;background: url('../{{member.photo}}');background-position: center;background-size: cover;"></div></center>
+                    <hr width="100%">
+                    {% if member == new_Team.leader %}
+                    <p style="color: rgb(255, 0, 0);" class=" m-0 p-0"><i><< LEADER >></i></p>
+                    {% endif %}
+                    <h4 class="card-title">{{member.owner.first_name}} {{member.owner.last_name}}</h4>
+
+                    <p class="card-text"><strong>Role: </strong> {{member.role}}</p>
+                    <button type="button" class="btn btn-primary btn m-2" data-bs-toggle="modal" data-bs-target="#memberInfoModal{{member.id}}">
+                      <i class="fas fa-info-circle fa-fw me-3"></i><span>See Info</span>
                     </button>
-                   {%endif%} 
-                  {%endfor%}
+                    <br>
+ 
+                    {% if myProfile == new_Team.leader and member != new_Team.leader %}
+                    <button type="button" onclick="memberDelete()" class="btn btn-danger">kick out</button>
+                    {% endif %}
+                  </div>
                 </div>
+                <script>
+                function memberDelete(){
+                  if (confirm("Are you sure?") == true) {
+                   window.location.href = "/memberRemove/"+"{{new_Team}}/"+"{{member}}";
+                  }   
+                }
+              </script>
+                
+                {% endfor %}  
               </div>
+              
+            </div>
 
+            <div id="chat" class="fade container tab-pane active" ><br>
+              
+                        <center><div class="left">
+                    <h3>
+                      <i class="fas fa-comments fa-fw me-3"></i>
+                      Chat
+                    </h3>  </center>      
+                <div id="chatSection" class="container d-flex flex-column p-3 card border border-3 border-top-0 border-bottom-0 bg-light text-black" style="margin-bottom: 130px; height: 100%;"> 
 
-
-              <hr style="width: 80;">  
-  
-            <div class="row mb-3">
-              {% for task in all_Tasks %}
-              {% for team in new_Team %}
-              {% if task.team == team and task.is_Done == True %}
-
-
-              <div class="shadow card  my-4 col-sm-6 col-xs-12 bg-light text-dark border border-bottom-0" style="max-height: 270px;max-width: 600px;margin-left: 10px;">
-                <div class="card-header">
-                  <div class="d-flex justify-content-between">
-                    <p class="card-text"><small class="text-muted">To: {{ task.forUser.owner.username }}</small></p>
-                    <p class="card-text"><small class="text-muted">Starts: {{task.created_Date}}</small></p>
-                   </div>
+                    <hr width="100%">
+                  </div>
                   
-                </div>
-                <div class="p-3">  
-                <h5 class="card-title" style="height: 30px; overflow: hidden;text-overflow: ellipsis;">{{task.title}}</h5>
-               </div>
-                <div class="card-footer">
-                  <div class="d-flex justify-content-between">
-                   <p class="card-text"><small class="text-muted">Deadline {{task.deadLine}} Days</small></p>
-                   <p class="card-text"><small class="text-muted">Daysleft {{task.dyas_Left}} Days</small></p>                  
-                  </div>
-                 <div class="d-flex justify-content-between align-items-center">
-                    <button type="button" class="btn btn-info" style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDetails/{{task.id}}">Details</a></button>
-                    <i class="fas fa-check-circle fa-2x"></i>
-                  </div>
-    
-                </div>
-                
-              </div>
-  
-              {% endif %}
-              {% endfor %}
-              {% endfor %}
-            </div>
-  
-  
-            </div>
-            <div id="myTasks" class="container tab-pane fade"><br>
-              <div class="top" style="display: flex;align-items: center;justify-content: space-between;">
-                <div class="left">
-                  <h3 style="color: rgb(3, 67, 67);"><img src="{% static 'img\Tasks.png' %}" alt="" style="width: 50px;margin-right: 10px;">My Tasks | In-Progress</h3>
-                </div>
-                
-                <div class="right d-flex">
-                 
-                  <a type="button" class="dropdown-toggle btn btn-primary  m-2" href="#" role="button" data-bs-toggle="dropdown" onclick="
-                  document.getElementById('first3').className = 'dropdown-item nav-link';
-                  document.getElementById('sec3').className = 'dropdown-item nav-link'
-                  "><i class="fas fa-stream fa-fw me-3"></i><span>Show</span></a>
-                    <ul class="dropdown-menu">
-                     <ul class=" nav nav-pill" role="tablist">
-                      <li><a id="first3" class="dropdown-item nav-link" data-bs-toggle="pill" href="#myTasks">In-Progress Tasks</a></li>
-                      <li><a id="sec3" class="dropdown-item nav-link" data-bs-toggle="pill" href="#doneMyTasks" >Completed Tasks</a></li>
-                     </ul>
-                  </ul>
-                  {% for team in new_Team %}
-                  {% if myProfile == team.leader %}
-                  <button type="button" class="btn btn-primary  m-2" data-bs-toggle="modal" data-bs-target="#addTaskModal">
-                    <i class="fas fa-plus fa-fw me-3"></i><span>Add Task</span>
-                  </button>
-                 {%endif%} 
-                {%endfor%}
-
-                </div>
-              </div>
 
 
-
-              <hr style="width: 80;">  
-  
-            <div class="row mb-3">
-                {% for my_task in my_Tasks %}
-                {% for team in new_Team %}
-                {% if my_task.team == team and my_task.is_Done == False %}
-                <div class="shadow card  my-4 col-sm-6 col-xs-12 bg-light text-dark border border-bottom-0" style="max-height: 270px;max-width: 600px;margin-left: 10px;">
-                  <div class="card-header">
-                    <div class="d-flex justify-content-between">
-                      <p class="card-text"><small class="text-muted">To: Me</small></p>
-                      <p class="card-text"><small class="text-muted">Starts: {{my_task.created_Date}}</small></p>
-                     </div>
                     
-                  </div>
-                  <div class="p-3">  
-                  <h5 class="card-title" style="height: 30px; overflow: hidden;text-overflow: ellipsis;">{{my_task.title}}</h5>
-                 </div>
-                  <div class="card-footer">
-                    <div class="d-flex justify-content-between">
-                     <p class="card-text"><small class="text-muted">Deadline {{my_task.deadLine}} Days</small></p>
-                     <p class="card-text"><small class="text-muted">Daysleft {{my_task.dyas_Left}} Days</small></p>                  
-                    </div>
-                   <div class="d-flex justify-content-between align-items-center">
-                      <button type="button" class="btn btn-info" style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDetails/{{my_task.id}}">Details</a></button>
-                      {% for team in new_Team %}
-                      {% if myProfile == team.leader %}
-                      <button type="button" onclick="taskDelete()" class="btn btn-danger" style="width: 40%;">Delete</button>
-                      {% endif %}
-                      {% endfor %}
-                      <script>
-                        function taskDelete() {
-                          if (confirm("Are you sure?") == true) {
-                           window.location.href = "/taskDelete/"+"{{my_task.id}}";
-                          }
-                        }
+
+                   <script>
+                    function messageDelete(){
+                      if (confirm("Are you sure?") == true) {
+                       window.location.href = "/messageRemove/"+"{{msg}}";
+                      }   
+                    }
                       </script>
-                    </div>
-      
+               
+               <center>
+                <form id="msg_form"  style="background-color: rgba(0, 0, 0, 0.7); position: fixed;bottom: 7%;width: 80.5%;">
+                {% csrf_token %}
+               
+                    <input type="hidden" name="tm" id="tm" value="{{new_Team}}">
+                   
+                  <div class="mb-3 mt-3 d-flex align-items-center justify-content-center">
+                    <input type="text" class="form-control m-0 me-3 w-50" id="msg" placeholder="Enter message" name="msg" required>
+                    <input type="submit" class="fas fa-paper-plane" value="send">
                   </div>
-                  
-                </div>
+          
+                </form>
+            </center>
+
     
-                  {% endif %}
-                  {% endfor %}
-                  {% endfor %}
-               </div>
-            
+                  </div></center>
+                  <script>
+                    $(document).ready(function(){
+                      setInterval(function(){
+                        $.ajax({
+                      type: "GET",
+                      url: "getMessages/{{new_Team}}", 
+                      success: function (response) {
+                        $("#chatSection").empty();
+                        for(var index in response.Msg){
+                              var imgUrl = 'url("../';
+                              imgUrl += response.Msg[index].photo;
+                              imgUrl += '")';
+                              var temp =  "<div class='card  bg-light me-5 shadow my-3 border p-3' ><div class='d-flex justify-content-between'><div class='d-flex align-items-center'><div class='rounded-circle border me-3 shadow-lg' style='width: 40px;height: 40px;background:"+ imgUrl +";background-position: center;background-size: cover;'></div><p class='text-primary p-0 m-0 me-3'>"+response.Msg[index].userName+":</p><p class='ms-2 m-0' style='opacity: 0.6;'>"+response.Msg[index].date+"</p></div></div><hr width='100%'><p class='m-0'>"+response.Msg[index].title+"</p></div>";  
+                              console.log(response.Msg[index].userName); 
+                              console.log(response.Msg[index].photo);  
+                              $("#chatSection").append(temp);
+                        }
+                        
+                      }
+                    });
+                      },2000);
+                    })
+                   
+                  </script>
+
+
+               
+          
             </div>
-
-
-            <div id="doneMyTasks" class="container tab-pane fade"><br>
-              <div class="top" style="display: flex;align-items: center;justify-content: space-between;">
-                <div class="left">
-                  <h3 style="color: rgb(3, 67, 67);"><img src="{% static 'img\Tasks.png' %}" alt="" style="width: 50px;margin-right: 10px;">My Tasks | Completed</h3>
-                </div>
-                
-                <div class="right d-flex">
-                  <a type="button" class="dropdown-toggle btn btn-primary m-2" href="#" role="button" data-bs-toggle="dropdown" onclick="
-                  document.getElementById('first4').className = 'dropdown-item nav-link';
-                  document.getElementById('sec4').className = 'dropdown-item nav-link'
-                  "><i class="fas fa-stream fa-fw me-3"></i><span>Show</span>
-                  </a>
-                    <ul class="dropdown-menu">
-                     <ul class=" nav nav-pill" role="tablist">
-                      <li><a id="first4" class="dropdown-item nav-link" data-bs-toggle="pill" href="#myTasks">In-Progress Tasks</a></li>
-                      <li><a id="sec4" class="dropdown-item nav-link" data-bs-toggle="pill" href="#doneMyTasks" >Completed Tasks</a></li>
-                     </ul>
-                  </ul>
-    
-                  {% for team in new_Team %}
-                  {% if myProfile == team.leader %}
-                  <button type="button" class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#addTaskModal">
-                    <i class="fas fa-plus fa-fw me-3"></i><span>Add Task</span>
-                  </button>
-                 {%endif%} 
-                {%endfor%}
-                </div>
-              </div>
-
-
-
-              <hr style="width: 80;">  
-  
-            <div class="row mb-3">
-              {% for my_task in my_Tasks %}
-              {% for team in new_Team %}
-              {% if my_task.team == team and my_task.is_Done == True %}
-              <div class="shadow card  my-4 col-sm-6 col-xs-12 bg-light text-dark border border-bottom-0" style="max-height: 270px;max-width: 600px;margin-left: 10px;">
-                <div class="card-header">
-                  <div class="d-flex justify-content-between">
-                    <p class="card-text"><small class="text-muted">To: Me</small></p>
-                    <p class="card-text"><small class="text-muted">Starts: {{my_task.created_Date}}</small></p>
-                   </div>
-                  
-                </div>
-                <div class="p-3">  
-                <h5 class="card-title" style="height: 30px; overflow: hidden;text-overflow: ellipsis;">{{my_task.title}}</h5>
-               </div>
-                <div class="card-footer">
-                  <div class="d-flex justify-content-between">
-                   <p class="card-text"><small class="text-muted">Deadline {{my_task.deadLine}} Days</small></p>
-                   <p class="card-text"><small class="text-muted">Daysleft {{my_task.dyas_Left}} Days</small></p>                  
-                  </div>
-                 <div class="d-flex justify-content-between align-items-center">
-                    <button type="button" class="btn btn-info" style="width: 40%;"><a class="nav-link text-white p-0" href="/taskDetails/{{my_task.id}}">Details</a></button>
-                  </div>
-    
-                </div>
-                
-              </div>
-                  {% endif %}
-                  {% endfor %}
-                  {% endfor %}
-               </div>
-            
-           
-
           </div>
         </div>
 
+        <script type="text/javascript">
+          $(document).on('submit','#msg_form',function(e){
+            e.preventDefault();
+            $.ajax({
+              type: "POST",
+              url: "/addMessage",
+              data: {
+                tm: $('#tm').val(),
+                msg:$('#msg').val(),
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+              },
+              success: function (response) {
+               //alert("nice") 
+               //window.location.href('#chat');
+              }
+            });
+          })
+        </script>
 
 
-
-
-</body>
-
-{% endblock TeamPage %}
+{% endblock %}
