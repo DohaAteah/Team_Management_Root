@@ -327,6 +327,7 @@ def toTeam(request):
 def toViewTeam(request):
   if request.user.is_authenticated:
     myProfile = Profile.objects.get(owner = request.user)
+    new_Team = None
     if Team.objects.filter(leader=myProfile).exists():
         new_Team = Team.objects.get(leader=myProfile)
     else:

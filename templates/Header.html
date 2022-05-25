@@ -67,12 +67,7 @@
       <!-- Brand -->
     <a class="d-flex align-items-center" style="margin-left: 20px;" href="/"><img src="{% static 'img\Logo.png' %}" alt="" style="width: 50px"><h2 class="m-0" style="color: rgb(111, 118, 255);font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;"> Control</h2></a>
 
-      <!-- Search form -->
-      <form class="d-none d-md-flex input-group w-auto" style="margin-left: 50px;">
-        <input autocomplete="off" type="search" class="form-control rounded"
-          placeholder='Type something' style="min-width: 225px" />
-        <span class="input-group-text border-0"><i class="fas fa-search"></i></span>
-      </form>
+
   
   <ul class="navbar-nav ms-auto d-flex flex-row">
     {% if user.is_authenticated %}
