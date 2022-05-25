@@ -264,14 +264,19 @@
 
         <div class="tab-content">
             <div  id="projectInfo" class="animated fade-in-left container tab-pane active"><br>
-                <div class="container mt-3 p-5 card border border-5 border-top-0 border-bottom-0  bg-light text-black">
-                    <center><h1 class="text-dark">{{project.title}}</h1></center>
+                <div class="container mt-3 p-5 card border border-3 border-top-0  bg-light text-black">
+                    <center><h1 class="text-primary">{{project.title}}</h1></center>
+                    <hr width="100%">
                      <br>
                      {% if  project.is_Done == False %}
                      <div class="progress" style="height:15px;border-radius: 5px;">
                        <div class="progress-bar" id="projectProgress{{project.id}}" style="width: {% if project.progress == '0.0%' or project.progress == '0%' %}5%{% else %}{{ project.progress }}{% endif %};">{{project.progress}}</div>
                      </div>
                      {% endif %}
+
+                  </div>
+                  <div class="container w-75 p-5 card border border-2 border-top-0 bg-light text-black">
+                    {{project.title}}
                   </div>
                  
             </div>

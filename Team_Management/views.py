@@ -362,36 +362,38 @@ def toViewTeam(request):
 
 def toViewProject(request, pid):
   if request.user.is_authenticated:
-    project = Project.objects.get(id = pid)
-    values = 0
-    value = 0
-    for tasks in Task.objects.filter(project = project):
-          value = tasks.progress[:-1]
-          value = int(value)
-          values += value
-    if Task.objects.filter(project = project).count():
-            values = values/Task.objects.filter(project = project).count()
-    values = str(values)
-    values = values+"%"
-    project.progress = values
-    project.save()
-    myProfile = Profile.objects.get(owner = request.user)
-    new_Team = project.team
-    for member in new_Team.members.all():
-          if member == myProfile:
-            ldr = new_Team.leader
-            all_Tasks = Task.objects.filter(author = ldr, project= project).order_by('created_Date')
-            my_Tasks = Task.objects.filter(forUser = myProfile, project= project).order_by('created_Date')
-            if all_Tasks.exists():
-              for task in all_Tasks:
-                if task.is_Done == False:
-                  task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
-            if my_Tasks.exists():
-              for task in my_Tasks:
-                if task.is_Done == False:
-                  task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
-            return render(request, "Team/ProjectPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks,'my_Tasks': my_Tasks,'myProfile':myProfile,'project':project})  
-    return redirect('Home')
+    if Project.objects.filter(id = pid).exists():
+      project = Project.objects.get(id = pid)
+      values = 0
+      value = 0
+      for tasks in Task.objects.filter(project = project):
+            value = tasks.progress[:-1]
+            value = int(value)
+            values += value
+      if Task.objects.filter(project = project).count():
+              values = values/Task.objects.filter(project = project).count()
+      values = str(values)
+      values = values+"%"
+      project.progress = values
+      project.save()
+      myProfile = Profile.objects.get(owner = request.user)
+      new_Team = project.team
+      for member in new_Team.members.all():
+            if member == myProfile:
+              ldr = new_Team.leader
+              all_Tasks = Task.objects.filter(author = ldr, project= project).order_by('created_Date')
+              my_Tasks = Task.objects.filter(forUser = myProfile, project= project).order_by('created_Date')
+              if all_Tasks.exists():
+                for task in all_Tasks:
+                  if task.is_Done == False:
+                    task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
+              if my_Tasks.exists():
+                for task in my_Tasks:
+                  if task.is_Done == False:
+                    task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
+              return render(request, "Team/ProjectPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks,'my_Tasks': my_Tasks,'myProfile':myProfile,'project':project})  
+    else:
+      return redirect('Home')
   else:
       return redirect('Home')
 
