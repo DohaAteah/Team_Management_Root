@@ -39,6 +39,7 @@ urlpatterns = [
     path('getMessages/<tm>', views.getMessages, name="getMessages"),
     path('getNoty', views.getNoty, name="getNoty"),
     path('removeNoty/<id>', views.removeNoty, name="removeNoty"),
+    path('taskSearch', views.taskSearch, name="taskSearch"),
 
     
 ]

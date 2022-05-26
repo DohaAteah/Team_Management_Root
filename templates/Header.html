@@ -67,7 +67,11 @@
       <!-- Brand -->
     <a class="d-flex align-items-center" style="margin-left: 20px;" href="/"><img src="{% static 'img\Logo.png' %}" alt="" style="width: 50px"><h2 class="m-0" style="color: rgb(111, 118, 255);font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;"> Control</h2></a>
 
-
+    <form action="/taskSearch" method="POST" class="d-flex ms-auto me-auto">
+      {% csrf_token %}
+      <input class="form-control me-2" type="number" placeholder="Enter task number" id="search" name="search" required>
+      <button type="submit" class="btn btn-primary" type="button">Search</button>
+    </form>
   
   <ul class="navbar-nav ms-auto d-flex flex-row">
     {% if user.is_authenticated %}
@@ -177,7 +181,6 @@
         <hr style="width: 80%;">
         <h4>Rate: <bl>{{myProfile.rated}}%</bl></h4>
         <h4>Tasks done: <bl>{{myProfile.doneTasksNum}}</bl></h4>
-        <h4>Projects done: <bl>{{myProfile.doneProjectsNum}}</bl></h4>
 
         </center>
       </div>

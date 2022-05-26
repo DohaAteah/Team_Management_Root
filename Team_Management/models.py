@@ -15,7 +15,6 @@ class Profile(models.Model):
     photo = models.ImageField(upload_to='static/cover-images/%y/%m/%d/',default = 'static/cover-images/default/Login.png')
     rated = models.IntegerField(default=0)
     doneTasksNum = models.IntegerField(default=0)
-    doneProjectsNum = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title
