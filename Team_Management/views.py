@@ -1,13 +1,9 @@
 from datetime import date
-import profile
 from Team_Management.form import ProjectForm, TeamForm,TaskForm
-from tkinter.messagebox import NO
-from turtle import title
 from unicodedata import name
 from django.conf import settings
 from django.shortcuts import redirect, render
 from Team_Management.models import  Message, Notification, Project, Task, Task_suggest, Team,Profile, Team_Request
-from django.utils import timezone
 from django.views.generic import View
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
