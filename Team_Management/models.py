@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from email.policy import default
 from pydoc import describe
-from tkinter import CASCADE
+from django.db.models.deletion import CASCADE
 from turtle import title
 from django.db import models
 from django.conf import settings
