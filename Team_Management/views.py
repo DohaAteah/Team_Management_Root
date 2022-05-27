@@ -6,7 +6,7 @@ from turtle import title
 from unicodedata import name
 from django.conf import settings
 from django.shortcuts import redirect, render
-from Team_Management.models import  Message, Notification, Project, Task, Team,Profile, Team_Request
+from Team_Management.models import  Message, Notification, Project, Task, Task_suggest, Team,Profile, Team_Request
 from django.utils import timezone
 from django.views.generic import View
 from django.http import HttpResponse, JsonResponse
@@ -55,16 +55,13 @@ def toHome(request):
           logout(request)
     if request.user.is_authenticated:
       profile = Profile.objects.get(owner = request.user)
+      new_Team = None
       new_Team = getProfileTeam(profile)
       getProfileRate(profile)
       if new_Team is not None:
-              return render(request , 'index.html',{
+          return render(request , 'index.html',{
       'myProfile':profile,
       'new_Team':new_Team
-      })
-      else:
-        return render(request , 'index.html',{
-      'myProfile':profile,
       })
     return render(request , 'index.html')
 
@@ -72,24 +69,22 @@ def getNoty(request):
   if request.user.is_authenticated:
      notyCount2 = 0
      profile = Profile.objects.get(owner = request.user)
-     notyCount = Team_Request.objects.filter(userToJoin = profile).count()
+     notyCount = Team_Request.objects.filter(userToJoin = profile, isUser = False).count()
      allCount = notyCount
-     new_Team = None
-     if Team.objects.filter(leader=profile).exists():
-        new_Team = Team.objects.get(leader=profile)
-     else:
-        Team1 = Team.objects.all()
-        for team_ins in Team1: 
-          for member in team_ins.members.all():
-           if profile== member:
-            new_Team = Team.objects.get(title = team_ins.title) 
+     new_Team = getProfileTeam(profile)
      if new_Team is not None:
-      notyCount2 = Team_Request.objects.filter(teamToJoin = new_Team).count()
+      notyCount2 = Team_Request.objects.filter(teamToJoin = new_Team, isUser = True).count()
       allCount += notyCount2
      teamNoty = allCount
      notysCount = Notification.objects.filter(forUser = profile).count()
      allCount += notysCount
-     return JsonResponse({'allCount': allCount,'notysCount':notysCount,'teamNoty':teamNoty})
+     suggNoty = Task_suggest.objects.filter(forUser = profile).count()
+     allCount += suggNoty
+     return JsonResponse({'allCount': allCount,'notysCount':notysCount,'teamNoty':teamNoty,'suggNoty':suggNoty})
+
+
+  
+
 
 class TaskJson(View):
     def get(self , *args  , **kwargs):
@@ -118,12 +113,34 @@ def addMessage(request):
     team.save()
   return HttpResponse('Success!')
 
+
+def suggestion(request, tid):
+  if request.user.is_authenticated:
+      newUser = request.POST['sugg']
+      myProfile = Profile.objects.get(owner = request.user)
+      user1 = None
+      if User.objects.filter(username = newUser).exists():
+        user1 = User.objects.get(username = newUser)
+        prof = Profile.objects.get(owner = user1)
+        task = None
+        if Task.objects.filter(id = tid).exists():
+          task = Task.objects.get(id = tid)
+          if Task_suggest.objects.filter(task = task, fromUser = myProfile, forUser = prof).exists():
+            messages.info(request, 'Suggestion request already sent!')
+            return redirect('toViewProject', task.project.id)
+          else:
+            suggReq = Task_suggest(task = task, fromUser = myProfile, forUser = prof)
+            suggReq.save()
+            messages.info(request, 'Suggestion request sent successfully!')
+            return redirect('toViewProject', task.project.id)
+  return redirect('Home')
+
+
+
 def getMessages(request, tm):
   if request.user.is_authenticated:
     team = Team.objects.get(title = tm)
-    prof = Profile.objects.filter(owner = request.user)
     Msg = team.messages.all()
-    print(Msg)
     return JsonResponse({"Msg":list(Msg.values())})
 
 def signup(request):
@@ -248,30 +265,17 @@ def activate(request, uidb64, token):
 def toCreateTeam(request):
   if request.user.is_authenticated:
     profile = Profile.objects.get(owner = request.user) 
-    new_Team = Team.objects.filter(leader=profile)
-    if new_Team.exists():
-         print(new_Team)
-    else:
-        Team1 = Team.objects.all()
-        for team_ins in Team1: 
-         for member in team_ins.members.all():
-          if profile== member:
-            new_Team = Team.objects.filter(title = team_ins.title)
+    getProfileRate(profile)
+    new_Team = None
+    new_Team = getProfileTeam(profile)
     return render(request, "Team/Create_Team.html",{'new_Team': new_Team,'myProfile':profile}) 
 
 def toJoinTeam(request):
   if request.user.is_authenticated:
     profile = Profile.objects.get(owner = request.user) 
     getProfileRate(profile)
-    new_Team = Team.objects.filter(leader=profile)
-    if new_Team.exists():
-         print(new_Team)
-    else:
-        Team1 = Team.objects.all()
-        for team_ins in Team1: 
-         for member in team_ins.members.all():
-          if profile== member:
-            new_Team = Team.objects.filter(title = team_ins.title)
+    new_Team = None
+    new_Team = getProfileTeam(profile)
     return render(request, "Team/Join_Team.html",{'new_Team': new_Team,'myProfile':profile}) 
 
 def create_team(request):
@@ -307,7 +311,7 @@ def join_team(request):
           messages.error(request, "Request Already sent!")
           return redirect('toJoinTeam')
       else:
-          joinRequest = Team_Request(userToJoin = userProf, teamToJoin = team)
+          joinRequest = Team_Request(userToJoin = userProf, teamToJoin = team, isUser = True)
           joinRequest.save()
           messages.error(request, "Request successfully sent!")
           return redirect('toJoinTeam') 
@@ -345,32 +349,31 @@ def toTeam(request):
 
 def toViewTeam(request):
   if request.user.is_authenticated:
-    myProfile = Profile.objects.get(owner = request.user)
-    getProfileRate(myProfile)
-    new_Team = getProfileTeam(myProfile)
-    if new_Team is not None:
-      all_Projects = Project.objects.filter(team = new_Team).order_by('started_Date')
-      if all_Projects.exists():
-        for project in all_Projects:
-          values = 0
-          value = 0
-          project.dyas_Left = project.deadLine - (date.today() - project.started_Date).days
-          for tasks in Task.objects.filter(project = project):
-            value = tasks.progress[:-1]
-            value = int('0' + value)
-            values += value
-          if Task.objects.filter(project = project).count():
-            values = values/Task.objects.filter(project = project).count()
-          values = str(values)
-          values = values+"%"
-          project.progress = values
-          project.save()
-      
-      return render(request, "Team/TeamPage.html", {'new_Team': new_Team,'all_Projects': all_Projects,'myProfile':myProfile}) 
-    else:
-      return redirect('Home')
-  else:
-      return redirect('Home')
+    if Profile.objects.filter(owner = request.user).exists():
+      myProfile = Profile.objects.get(owner = request.user)
+      getProfileRate(myProfile)
+      new_Team = getProfileTeam(myProfile)
+      if new_Team is not None:
+        all_Projects = Project.objects.filter(team = new_Team).order_by('started_Date')
+        if all_Projects.exists():
+          for project in all_Projects:
+            values = 0
+            value = 0
+            project.dyas_Left = project.deadLine - (date.today() - project.started_Date).days
+            for tasks in Task.objects.filter(project = project):
+              value = tasks.progress[:-1]
+              value = int('0' + value)
+              values += value
+            if Task.objects.filter(project = project).count():
+              values = values/Task.objects.filter(project = project).count()
+            values = str(values)
+            values = values+"%"
+            project.progress = values
+            project.save()
+        
+        return render(request, "Team/TeamPage.html", {'new_Team': new_Team,'all_Projects': all_Projects,'myProfile':myProfile}) 
+
+  return redirect('Home')
 
 def toViewProject(request, pid):
   if request.user.is_authenticated:
@@ -388,29 +391,27 @@ def toViewProject(request, pid):
       values = values+"%"
       project.progress = values
       project.save()
-      myProfile = Profile.objects.get(owner = request.user)
-      getProfileRate(myProfile)
-      new_Team = project.team
-      for member in new_Team.members.all():
-            if member == myProfile:
-              ldr = new_Team.leader
-              all_Tasks = Task.objects.filter(author = ldr, project= project).order_by('created_Date')
-              my_Tasks = Task.objects.filter(forUser = myProfile, project= project).order_by('created_Date')
-              if all_Tasks.exists():
-                for task in all_Tasks:
-                  if task.is_Done == False:
-                    task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
-                    task.save()
-              if my_Tasks.exists():
-                for task in my_Tasks:
-                  if task.is_Done == False:
-                    task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
-                    task.save()
-              return render(request, "Team/ProjectPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks,'my_Tasks': my_Tasks,'myProfile':myProfile,'project':project})  
-    else:
-      return redirect('Home')
-  else:
-      return redirect('Home')
+      if Profile.objects.filter(owner = request.user):
+        myProfile = Profile.objects.get(owner = request.user)
+        getProfileRate(myProfile)
+        new_Team = project.team
+        for member in new_Team.members.all():
+              if member == myProfile:
+                ldr = new_Team.leader
+                all_Tasks = Task.objects.filter(author = ldr, project= project).order_by('created_Date')
+                my_Tasks = Task.objects.filter(forUser = myProfile, project= project).order_by('created_Date')
+                if all_Tasks.exists():
+                  for task in all_Tasks:
+                    if task.is_Done == False:
+                      task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
+                      task.save()
+                if my_Tasks.exists():
+                  for task in my_Tasks:
+                    if task.is_Done == False:
+                      task.dyas_Left = task.deadLine - (date.today() - task.created_Date).days
+                      task.save()
+                return render(request, "Team/ProjectPage.html", {'new_Team': new_Team,'all_Tasks': all_Tasks,'my_Tasks': my_Tasks,'myProfile':myProfile,'project':project})  
+  return redirect('Home')
 
 def toAddMembers(request):
   profile = Profile.objects.get(owner = request.user)
@@ -551,34 +552,83 @@ def teamRemove(request, tm):
 
 def leaveTeam(request,tm, mem):
   if request.user.is_authenticated:
-    profile = Profile.objects.get(request.user)
-    user = Profile.objects.get(title = mem)
+    profile = Profile.objects.get(owner = request.user)
+    user2 = Profile.objects.get(title = mem)
     team = Team.objects.get(title = tm)
-    if profile == user:
+    if profile == user2:
       for member in team.members.all():
-        if member == user:
-          team.members.remove(user)
+        if member == user2:
+          team.members.remove(user2)
+          noty = Notification(title = mem+" left the team!", forUser = team.leader)
+          noty.save()
   return redirect('Home')
 
 def toViewTeam_Req(request):
   if request.user.is_authenticated:
     prof = Profile.objects.get(owner = request.user)
-    team_req_noty = Team_Request.objects.filter(userToJoin = prof)
+    team = getProfileTeam(prof)
+    team_req_noty = None
+    if Team_Request.objects.filter(userToJoin = prof, isUser = False).exists():
+      team_req_noty = Team_Request.objects.filter(userToJoin = prof, isUser = False)
     team_req_noty2 = None
     if Team.objects.filter(leader = prof):
       team = Team.objects.get(leader = prof)
-      team_req_noty2 = Team_Request.objects.filter(teamToJoin = team)
-    return render(request,"Notifications/Team_Requests.html",{'team_req_noty':team_req_noty,'team_req_noty2':team_req_noty2,'myProfile':prof})
+      team_req_noty2 = Team_Request.objects.filter(teamToJoin = team, isUser = True)
+    return render(request,"Notifications/Team_Requests.html",{'team_req_noty':team_req_noty,'team_req_noty2':team_req_noty2,'myProfile':prof,'new_Team':team})
   else:
     return redirect('Home')
 
 def toViewNotifications(request):
   if request.user.is_authenticated:
     prof = Profile.objects.get(owner = request.user)
+    team = getProfileTeam(prof)
     notifications = Notification.objects.filter(forUser = prof)
-    return render(request,"Notifications/Notification.html",{'notifications':notifications,'myProfile':prof})
+    return render(request,"Notifications/Notification.html",{'notifications':notifications,'myProfile':prof,'new_Team':team})
   else:
     return redirect('Home')
+
+
+def toViewSuggestion(request):
+  if request.user.is_authenticated:
+    prof = Profile.objects.get(owner = request.user)
+    team = getProfileTeam(prof)
+    suggRequest = Task_suggest.objects.filter(forUser = prof)
+    return render(request,"Notifications/Suggest_Requests.html",{'suggRequest':suggRequest,'myProfile':prof,'new_Team':team})
+  else:
+    return redirect('Home')
+
+def applySuggestion(request, sid):
+  if request.user.is_authenticated:
+    if Profile.objects.filter(owner = request.user).exists():
+      prof = Profile.objects.get(owner = request.user)
+      suggReq = Task_suggest.objects.filter(id = sid)
+      if suggReq.exists():
+        suggRequest = Task_suggest.objects.get(id = sid)
+        if suggRequest is not None:
+          if prof == suggRequest.forUser:
+            task = suggRequest.task
+            task.forUser = suggRequest.forUser
+            task.save()
+            noty = Notification(title = "[ ^_^ ] "+ suggRequest.forUser.owner.username+" accept your suggest to do the task with number: "+str(suggRequest.task.id), forUser = suggRequest.fromUser)
+            noty.save()
+            suggRequest.delete()
+            if Task_suggest.objects.filter(task = suggRequest.task).exists():
+              Task_suggest.objects.filter(task = suggRequest.task).delete()
+            return redirect('toViewSuggestion')
+  return redirect('Home')
+
+def rejectSuggestion(request, sid):
+  if request.user.is_authenticated:
+    prof = Profile.objects.get(owner = request.user)
+    suggReq = Task_suggest.objects.filter(id = sid)
+    if suggReq.exists():
+      suggRequest = Task_suggest.objects.get(id = sid)
+      if prof == suggRequest.forUser:
+        noty = Notification(title = "[ x_x ] "+ suggRequest.forUser.owner.username+" reject your suggest to do the task with number: "+str(suggRequest.task.id), forUser = suggRequest.fromUser)
+        noty.save()
+        suggRequest.delete()
+        return redirect('toViewSuggestion')
+  return redirect('Home')
 
 
 
@@ -587,6 +637,8 @@ def JoinTeam(request,tm, mem, id):
     team = Team.objects.get(title = tm)
     user = Profile.objects.get(title = mem)
     team.members.add(user)
+    noty = Notification(title = mem+" joined the team!", forUser = team.leader)
+    noty.save()
     Team_Request.objects.get(id = id).delete()
     return redirect('toViewTeam_Req')
 
@@ -623,6 +675,8 @@ def finishTask(request, pValue,tid ,pid):
         task2.created_Date = date.today()
         task2.save()
     task.save()
+    noty = Notification(title = task.forUser.owner.username+" finished the task with number: " + str(task.id),forUser = project.team.leader)
+    noty.save()
     return redirect('toViewProject',project.id)
   else:
     return redirect('Home')

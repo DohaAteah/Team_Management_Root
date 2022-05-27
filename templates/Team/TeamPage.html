@@ -55,6 +55,126 @@
 </div>
 
 
+<!-- Chat Modal -->
+<div class="modal  fade" id="chatModal">
+  <div class="modal-dialog modal-xl ">
+    <div class="modal-content bg-dark">
+
+      <!-- Modal Header -->
+      <div class="modal-header navbar">
+        <h4 class="modal-title  text-light"><i class="fas fa-comments fa-fw me-3"></i>CHAT</h4>
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <div id="chatSection" class="container d-flex flex-column ms-5 mb-5"> 
+
+      
+        </div>
+        <div id="latestMessages" class="container-fluid"></div>
+        
+        
+        <div style="border-radius: 10px; background-color: rgba(0, 0, 0, 0.7); position: fixed;left: 0%;bottom: 0;width: 100%;">
+          
+            <form id="msg_form" >
+            {% csrf_token %}
+          
+                <input type="hidden" name="tm" id="tm" value="{{new_Team}}">
+              
+              <div class="mb-3 mt-3 d-flex align-items-center justify-content-center">
+                <button type="button" onclick="goToLatestMsg()" class="btn btn-info mx-3"><i class="fas fa-level-down-alt"></i></button>
+                <input type="text" class="form-control m-0 me-3 w-75 p-2" id="msg" placeholder="Enter message" name="msg" required>
+                <input type="submit" class="btn btn-primary" value="send">
+              </div>
+
+            </form>
+        </div>
+      </div>
+    <script>
+      $(document).ready(function(){
+        setInterval(function(){
+          $.ajax({
+        type: "GET",
+        url: "getMessages/{{new_Team}}", 
+        success: function (response) {
+          $("#chatSection").empty();
+          for(var index in response.Msg){
+                var imgUrl = 'url("../';
+                imgUrl += response.Msg[index].photo;
+                imgUrl += '")';
+
+                var now = new Date();
+                let date = response.Msg[index].date
+                let dateInfo = date.slice(0, 10);
+                let year = date.slice(0, 4);
+                let mounth = date.slice(5, 7);
+                let day = date.slice(8, 10);
+                let timeInfo = date.slice(11, 19);
+                let hours = date.slice(11, 13);
+                let min = date.slice(14, 16);
+                let sec = date.slice(17, 19);
+                mounth = parseInt(mounth);
+                mounth -= 1;
+                var msgDate = new Date(year,mounth,day,hours,min,sec,0);
+                var difference = now.getTime() - msgDate.getTime();
+                console.log(difference);
+
+
+                if (difference < 259200000){
+                if (response.Msg[index].userName == '{{myProfile.owner.username}}'){
+                 var temp =  "<div class='card  bg-light shadow my-3 border p-3 w-50' ><div class='d-flex justify-content-between'><div class='d-flex align-items-center'><div class='rounded-circle border me-3 shadow-lg' style='width: 40px;height: 40px;background:"+ imgUrl +";background-position: center;background-size: cover;'></div><p class='text-primary p-0 m-0 me-3'>"+response.Msg[index].userName+":</p><p class='ms-2 m-0' style='opacity: 0.6;'>"+ dateInfo +" | "+timeInfo +"</p></div></div><hr width='100%'><p class='m-0'>"+response.Msg[index].title+"</p></div>";  
+                }
+                else{
+                 var temp =  "<div class='card  bg-light shadow my-3 border p-3 w-50' style = 'position: realtive; left:40%'><div class='d-flex justify-content-between'><div class='d-flex align-items-center'><div class='rounded-circle border me-3 shadow-lg' style='width: 40px;height: 40px;background:"+ imgUrl +";background-position: center;background-size: cover;'></div><p class='text-primary p-0 m-0 me-3'>"+response.Msg[index].userName+":</p><p class='ms-2 m-0' style='opacity: 0.6;'>"+ dateInfo +" | "+timeInfo +"</p></div></div><hr width='100%'><p class='m-0'>"+response.Msg[index].title+"</p></div>";  
+                } 
+                $("#chatSection").append(temp);
+
+              }
+          }
+          
+        }
+      });
+        },2000);
+      })
+     
+    </script>
+        <script type="text/javascript">
+          $(document).on('submit','#msg_form',function(e){
+            e.preventDefault();
+            $.ajax({
+              type: "POST",
+              url: "/addMessage",
+              data: {
+                tm: $('#tm').val(),
+                msg:$('#msg').val(),
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+              },
+              success: function (response) {
+                //window.location.hash = "jump_to_this_location";
+                document.getElementById("latestMessages").scrollIntoView({behavior: 'smooth'});
+                const msg = document.getElementById('msg');
+                msg.value = '';
+
+              }
+            });
+          });
+
+          function goToLatestMsg(){
+            document.getElementById("latestMessages").scrollIntoView({behavior: 'smooth'});
+          }
+          
+        </script>
+
+          </div>
+
+    </div>
+  </div>
+</div>
+
+
     <div class="container">
 
       <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white">
@@ -69,7 +189,7 @@
             <a href="#projects" data-bs-toggle="pill" class="list-group-item list-group-item-action py-2 ripple " aria-current="true">
               <i class="fas fa-chart-bar fa-fw me-3"></i><span>Projects</span>
             </a>
-            <a href="#chat" data-bs-toggle="pill" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#chatModal" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
               <i class="fas fa-comments fa-fw me-3"></i>Chat</a>
             
             <a href="#members" data-bs-toggle="pill" class="list-group-item list-group-item-action py-2 ripple " aria-current="true">
@@ -314,97 +434,10 @@
               </div>
               
             </div>
-
-            <div id="chat" class="fade container tab-pane active" ><br>
-              
-                        <center><div class="left">
-                    <h3>
-                      <i class="fas fa-comments fa-fw me-3"></i>
-                      Chat
-                    </h3>  </center>      
-                <div id="chatSection" class="container d-flex flex-column p-3 card border border-3 border-top-0 border-bottom-0 bg-light text-black" style="margin-bottom: 130px; height: 100%;"> 
-
-                    <hr width="100%">
-                  </div>
-                  
-
-
-                    
-
-                   <script>
-                    function messageDelete(){
-                      if (confirm("Are you sure?") == true) {
-                       window.location.href = "/messageRemove/"+"{{msg}}";
-                      }   
-                    }
-                      </script>
-               
-               <center>
-                <form id="msg_form"  style="background-color: rgba(0, 0, 0, 0.7); position: fixed;bottom: 7%;width: 80.5%;">
-                {% csrf_token %}
-               
-                    <input type="hidden" name="tm" id="tm" value="{{new_Team}}">
-                   
-                  <div class="mb-3 mt-3 d-flex align-items-center justify-content-center">
-                    <input type="text" class="form-control m-0 me-3 w-50" id="msg" placeholder="Enter message" name="msg" required>
-                    <input type="submit" class="btn btn-primary" value="send">
-                  </div>
-          
-                </form>
-            </center>
-
-    
-                  </div></center>
-                  <script>
-                    $(document).ready(function(){
-                      setInterval(function(){
-                        $.ajax({
-                      type: "GET",
-                      url: "getMessages/{{new_Team}}", 
-                      success: function (response) {
-                        $("#chatSection").empty();
-                        for(var index in response.Msg){
-                              var imgUrl = 'url("../';
-                              imgUrl += response.Msg[index].photo;
-                              imgUrl += '")';
-                              var temp =  "<div class='card  bg-light me-5 shadow my-3 border p-3' ><div class='d-flex justify-content-between'><div class='d-flex align-items-center'><div class='rounded-circle border me-3 shadow-lg' style='width: 40px;height: 40px;background:"+ imgUrl +";background-position: center;background-size: cover;'></div><p class='text-primary p-0 m-0 me-3'>"+response.Msg[index].userName+":</p><p class='ms-2 m-0' style='opacity: 0.6;'>"+response.Msg[index].date+"</p></div></div><hr width='100%'><p class='m-0'>"+response.Msg[index].title+"</p></div>";  
-                              console.log(response.Msg[index].userName); 
-                              console.log(response.Msg[index].photo);  
-                              $("#chatSection").append(temp);
-                        }
-                        
-                      }
-                    });
-                      },2000);
-                    })
-                   
-                  </script>
-
-
-               
-          
-            </div>
           </div>
         </div>
 
-        <script type="text/javascript">
-          $(document).on('submit','#msg_form',function(e){
-            e.preventDefault();
-            $.ajax({
-              type: "POST",
-              url: "/addMessage",
-              data: {
-                tm: $('#tm').val(),
-                msg:$('#msg').val(),
-                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
-              },
-              success: function (response) {
-               //alert("nice") 
-               //window.location.href('#chat');
-              }
-            });
-          })
-        </script>
+
 
 
 {% endblock %}

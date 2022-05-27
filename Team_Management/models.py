@@ -42,7 +42,7 @@ class Team_Request(models.Model):
     title = models.CharField(max_length=50,default="Team Request")
     teamToJoin = models.ForeignKey(Team, related_name='Team_to_join', on_delete=models.CASCADE)
     userToJoin = models.ForeignKey(Profile, related_name='User_to_join', on_delete= models.CASCADE)
-    isAccepted = models.BooleanField(default=False)
+    isUser = models.BooleanField(default=False)
     created_Date = models.DateField(default=date.today())
     
     def __str__(self):
@@ -77,6 +77,7 @@ class Task(models.Model):
     dyas_Left = models.IntegerField(default=0)
     progress = models.CharField(max_length=100,default="0%")
     dependsOn = models.ForeignKey('self', related_name='dependTask', on_delete=models.CASCADE, null = True)
+    suggestion = models.ForeignKey(Profile, related_name='suggest_to', on_delete=models.CASCADE, null = True)
 
 
     def __str__(self):
@@ -88,3 +89,9 @@ class Notification(models.Model):
     title = models.CharField(max_length=10000,default="Task Notification")
     created_Date = models.DateField(default=date.today())
     forUser = models.ForeignKey(Profile, related_name='forUserNoty', on_delete= models.CASCADE)
+
+class Task_suggest(models.Model):
+    task = models.ForeignKey(Task, related_name='suggested_Task',on_delete=models.CASCADE)
+    fromUser = models.ForeignKey(Profile, related_name='suggFromUser', on_delete=models.CASCADE)
+    forUser = models.ForeignKey(Profile, related_name='suggForUser', on_delete= models.CASCADE)
+    created_Date = models.DateField(default=date.today())

@@ -1,0 +1,46 @@
+{% extends "Header.html" %}
+
+{% block AuthMain %}
+{% load static %}
+
+<div style="margin-top:100px;">
+
+    <center><h1 class="m-0"><i class="fas fa-code-branch fa-fw me-3"></i><span>Suggestion Requests</span></h1><br></center>
+    <hr width="100%">
+    {% if suggRequest.exists %}
+        {% for suggReq in suggRequest %}
+        <div class="card border border-5 border-top-0 border-bottom-0 p-3 m-5">
+            <p class="m-0 p-0" style="opacity: 0.5;">{{suggReq.created_Date}}</p>
+        <div class="d-flex align-items-center justify-content-between">
+            <p class="m-0"><y class="text-primary">(Suggestion)</y> {{suggReq.fromUser}} suggest you to take the task with number: {{ suggReq.task.id }}</p>
+            <div class="d-flex">
+            <button type="button" onclick="reject()" class="btn btn-danger"  style="margin-left: 20px">Reject</button>
+            <button type="button" onclick="apply()" class="btn btn-success" style="margin-left: 20px">Apply</button>
+            </div>
+            
+        </div>
+
+        <script>
+            function apply() {
+            if (confirm("Are you sure?") == true) {
+            window.location.href = "/applySuggestion/"+"{{suggReq.id}}";
+                }
+                }
+                function reject() {
+                window.location.href = "/rejectSuggestion/"+"{{suggReq.id}}";
+                }
+        </script>
+    </div>
+
+    {% endfor %}
+    {% else %}
+    <center><h5 class="card border border-5 border-top-0 border-bottom-0 m-5 p-3">No suggestions requests</h1></center>
+    {%endif%}
+        
+
+</div>
+
+{% endblock %}
+
+
+

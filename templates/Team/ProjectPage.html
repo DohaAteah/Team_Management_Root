@@ -41,7 +41,22 @@
         </div>
         <!-- Modal footer -->
         <div class="modal-footer">
-          
+          {% if task.forUser == myProfile or new_Team.leader == myProfile %}
+          <form action="/suggestion/{{task.id}}" class="was-validated mb-3  d-flex align-items-center justify-content-center" method="post" style="margin-right: 105px;">
+            {% csrf_token %}
+            <label class="form-label m-0 me-3" for="sugg">Suggest:</label>
+              <select class="form-select" id="sugg" name="sugg" required>
+                <option></option>
+                {% for member in new_Team.members.all %}
+                {% if task.forUser != member %}
+                  <option>{{ member.owner.username }}</option>
+                  {%endif%}
+                {% endfor %}
+              </select>          
+              <button type="submit" class="btn btn-primary m-0 ms-3"><i class="fas fa-paper-plane"></i></button>
+          </form>
+          <hr width="100%">
+          {%endif%}
 
            <div class="d-flex justify-content-center">
             {% if new_Team.leader == myProfile or task.forUser == myProfile %}
@@ -263,7 +278,15 @@
 
 
         <div class="tab-content">
-            <div  id="projectInfo" class="animated fade-in-left container tab-pane active"><br>
+            <div  id="projectInfo" class="animated fade-in-left container tab-pane active">
+              {% for message in messages %}
+              <div class="alert alert-warning alert-dismissible fade show" role="alert">
+              <strong>Alert: </strong> {{message}}
+              <button class="btn-close" data-bs-dismiss="alert">      
+              <span aria-hidden="true">&times;</span> 
+              </button>
+              </div>
+              {% endfor %}<br>
                 <div class="container mt-3 p-5 card border border-3 border-top-0  bg-light text-black">
                     <center><h1 class="text-primary">{{project.title}}</h1></center>
                     <hr width="100%">
@@ -368,7 +391,7 @@
                   <button onclick="details('{{task.id}}','{{task.progress}}')" type="button" class="btn btn-primary btn m-2 " data-bs-toggle="modal" data-bs-target="#taskInfoModal{{task.id}}">
                     <i class="fas fa-info fa-fw me-3"></i><span>Details</span>
                   </button>                  
-                  
+
                   <!--Doha section-->
                   
                 
@@ -386,7 +409,7 @@
                 </div>
   
               </div>
-              
+
             </div>
 
               {% endif %}

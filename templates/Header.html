@@ -20,6 +20,8 @@
     <link rel="png" href="{% static 'img\Logo.png' %}">
     <link rel="stylesheet" href="{% static 'css/layout.css' %}">   
     <link rel="stylesheet" href="{% static 'css/mdb.min.css' %}"> 
+
+ 
 </head>
 <body>
 
@@ -67,7 +69,7 @@
       <!-- Brand -->
     <a class="d-flex align-items-center" style="margin-left: 20px;" href="/"><img src="{% static 'img\Logo.png' %}" alt="" style="width: 50px"><h2 class="m-0" style="color: rgb(111, 118, 255);font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;"> Control</h2></a>
 
-    <form action="/taskSearch" method="POST" class="d-flex ms-auto me-auto">
+    <form action="/taskSearch" method="POST" class="d-flex ms-auto ">
       {% csrf_token %}
       <input class="form-control me-2" type="number" placeholder="Enter task number" id="search" name="search" required>
       <button type="submit" class="btn btn-primary" type="button">Search</button>
@@ -85,6 +87,7 @@
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
         <li><a class="dropdown-item" href="/toViewTeam_Req">Team requests <bl id="notySection2"></bl></a></li>
         <li><a class="dropdown-item" href="/toViewNotifications">Notifications <bl id="notySection3"></bl></a></li>
+        <li><a class="dropdown-item" href="/toViewSuggestion">Suggestion <bl id="notySection4"></bl></a></li>
       </ul>
     </li>
     {% endif %}
@@ -94,30 +97,34 @@
         setInterval(function(){
           $.ajax({
         type: "GET",
-        url: "getNoty", 
+        url: "/getNoty", 
         success: function (response) {
           $("#notySection").empty();
           $("#notySection2").empty();
           $("#notySection3").empty();
-          var temp = "";var temp2 = "";var temp3 = "";          
+          $("#notySection4").empty();
+          var temp = "";var temp2 = "";var temp3 = "";var temp4 = "";          
           if(response.allCount > 0)
             temp = response.allCount;
           if(response.teamNoty > 0)
             temp2 = "("+response.teamNoty+")";
           if(response.notysCount > 0)
             temp3 = "("+response.notysCount+")";
-           console.log(response.allCount); 
-           console.log(response.teamNoty); 
-           console.log(response.notysCount);  
+          if(response.suggNoty > 0)
+            temp4 = "("+response.suggNoty+")";
+
           $("#notySection").append(temp);
           $("#notySection2").append(temp2);
           $("#notySection3").append(temp3);
+          $("#notySection4").append(temp4);
         }
       });
         },2000);
       })
      
     </script>
+
+
 
     <!-- Avatar -->
     <li class="nav-item dropdown" style="margin-right: 50px;">

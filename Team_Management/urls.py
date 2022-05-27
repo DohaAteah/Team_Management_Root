@@ -40,6 +40,10 @@ urlpatterns = [
     path('getNoty', views.getNoty, name="getNoty"),
     path('removeNoty/<id>', views.removeNoty, name="removeNoty"),
     path('taskSearch', views.taskSearch, name="taskSearch"),
+    path('suggestion/<tid>', views.suggestion, name="suggestion"),
+    path('toViewSuggestion', views.toViewSuggestion, name="toViewSuggestion"),
+    path('applySuggestion/<sid>', views.applySuggestion, name="applySuggestion"),
+    path('rejectSuggestion/<sid>', views.rejectSuggestion, name="rejectSuggestion"),
 
     
 ]
