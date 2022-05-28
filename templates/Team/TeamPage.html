@@ -409,7 +409,7 @@
                     {% if member == new_Team.leader %}
                     <p style="color: rgb(255, 0, 0);" class=" m-0 p-0"><i><< LEADER >></i></p>
                     {% endif %}
-                    <h4 class="card-title">{{member.owner.first_name}} {{member.owner.last_name}}</h4>
+                    <h4 class="card-title">{{member.owner.username}}</h4>
 
                     <p class="card-text"><strong>Role: </strong> {{member.role}}</p>
                     <button type="button" class="btn btn-primary btn m-2" data-bs-toggle="modal" data-bs-target="#memberInfoModal{{member.id}}">
