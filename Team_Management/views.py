@@ -693,17 +693,22 @@ def taskSearch(request):
       prof = Profile.objects.get(owner = request.user)
       new_Team = getProfileTeam(prof)
       if new_Team is not None:   
-        taskNum = request.POST['search']
-        if Task.objects.filter(id = taskNum).exists():
-          newTask = Task.objects.get(id = taskNum)
-          newTask.dyas_Left = newTask.deadLine - (date.today() - newTask.created_Date).days
-          newTask.save()
-          project = newTask.project
-          if project.team == new_Team:
-            return render(request,'Search.html',{'new_Team':new_Team,'myProfile':prof,'newTask':newTask})
-        else:
-          return render(request,'Search.html',{'new_Team':new_Team,'myProfile':prof,'newTask':newTask})
-      else:
-        return render(request,'Search.html',{'new_Team':new_Team,'myProfile':prof,'newTask':newTask})
+        searchResault = request.POST['search']
+        newTask = None
+        newProf = None
+        if User.objects.filter(username = searchResault).exists():
+          user = User.objects.get(username = searchResault)
+          newProf = Profile.objects.get(owner = user)
+          print(newProf)  
+        if searchResault.isnumeric():    
+          if Task.objects.filter(id = searchResault).exists():
+            newTask = Task.objects.get(id = searchResault)
+            newTask.dyas_Left = newTask.deadLine - (date.today() - newTask.created_Date).days
+            newTask.save()
+            project = newTask.project
+            if project.team == new_Team:
+              return render(request,'Search.html',{'new_Team':new_Team,'myProfile':prof,'newTask':newTask,'newProf':newProf})
+ 
+    return render(request,'Search.html',{'new_Team':new_Team,'myProfile':prof,'newTask':newTask,'newProf':newProf})
   else:
     return redirect('login')
