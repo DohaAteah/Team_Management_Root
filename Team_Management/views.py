@@ -1,4 +1,5 @@
 from datetime import date
+from turtle import title
 from Team_Management.form import ProjectForm, TeamForm,TaskForm
 from unicodedata import name
 from django.conf import settings
@@ -649,7 +650,16 @@ def JoinTeam(request,tm, mem, id):
 
 def RequestReject(request, id):
   if request.user.is_authenticated:
-    Team_Request.objects.get(id = id).delete()
+    if Team_Request.objects.filter(id = id).exists():
+      teamReq = Team_Request.objects.get(id = id);
+      if teamReq.isUser:
+        noty = Notification(title = teamReq.teamToJoin.title+" reject your join request!", forUser = teamReq.userToJoin)
+      else:
+        noty = Notification(title = teamReq.userToJoin.owner.username+" reject your request!", forUser = teamReq.teamToJoin.leader)
+      
+      teamReq.delete()
+      noty.save()
+      
     return redirect('toViewTeam_Req')
 
 def removeNoty(request, id):
