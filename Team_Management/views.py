@@ -1,4 +1,5 @@
 from datetime import date
+from turtle import title
 from Team_Management.form import ProjectForm, TeamForm,TaskForm
 from unicodedata import name
 from django.conf import settings
@@ -540,7 +541,9 @@ def memberRemove(request,tm, mem):
     if profTeam == team:
       if profTeam.leader == prof:
         user = Profile.objects.get(title = mem)
+        noty = Notification(title = team.leader.owner.title+" kicked you out of the team!", forUser = user)
         team.members.remove(user)
+        noty.save()
     return redirect('toViewTeam') 
 
 def teamRemove(request, tm):
