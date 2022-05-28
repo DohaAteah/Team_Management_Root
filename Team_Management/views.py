@@ -102,11 +102,13 @@ def addMessage(request):
     value = request.POST['msg']
     tm = request.POST['tm']
     prof = Profile.objects.get(owner = request.user)
-    new_msg = Message(title = value, userName = request.user.username, photo = prof.photo)
-    new_msg.save()
-    team = Team.objects.get(title = tm)
-    team.messages.add(new_msg)
-    team.save()
+    team = getProfileTeam(prof)
+    if team is not None:
+      new_msg = Message(title = value, userName = request.user.username, photo = prof.photo)
+      new_msg.save()
+      team = Team.objects.get(title = tm)
+      team.messages.add(new_msg)
+      team.save()
   return HttpResponse('Success!')
 
 
