@@ -54,11 +54,11 @@ def toHome(request):
       new_Team = None
       new_Team = getProfileTeam(profile)
       getProfileRate(profile)
-      if new_Team is not None:
-          return render(request , 'index.html',{
+      return render(request , 'index.html',{
       'myProfile':profile,
       'new_Team':new_Team
       })
+      
     return render(request , 'index.html')
 
 def getNoty(request):
