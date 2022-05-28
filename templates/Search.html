@@ -256,6 +256,9 @@
         <h4 class="card-title">{{newProf.owner.first_name}} {{newProf.owner.last_name}}</h4>
 
         <p class="card-text"><strong>Role: </strong> {{newProf.role}}</p>
+        {% if newProf.team is not None %}
+        <p class="card-text"><strong>Team: </strong> {{newProf.team}}</p>
+        {% endif %}
         <button type="button" class="btn btn-primary btn m-2" data-bs-toggle="modal" data-bs-target="#memberInfoModal">
           <i class="fas fa-info-circle fa-fw me-3"></i><span>See Info</span>
         </button>
