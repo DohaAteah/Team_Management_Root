@@ -66,7 +66,8 @@
         </div>
         <!-- Modal footer -->
         <div class="modal-footer">
-          {% if newTask.forUser == myProfile and newTask.is_Done == False %}
+          {% if newTask.is_Done == False %}
+          {% if newTask.forUser == myProfile or new_Team.leader == myProfile %}
           <form action="/suggestion/{{newTask.id}}" class="was-validated mb-3  d-flex align-items-center justify-content-center" method="post" style="margin-right: 120px;">
             {% csrf_token %}
               <select class="form-select" id="sugg" name="sugg">
@@ -80,7 +81,7 @@
               <button type="submit" class="btn btn-primary ms-3"><i class="	fas fa-paper-plane"></i></button>
           </form>
           {%endif%}
-          
+          {%endif%}
             
            <div class="d-flex justify-content-center">
             {% if new_Team.leader == myProfile or newTask.forUser == myProfile %}
