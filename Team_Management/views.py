@@ -691,6 +691,7 @@ def taskSearch(request):
   if request.user.is_authenticated:
     newTask = None
     newProf = None
+    profTeam = None
     if request.method == "POST":
       prof = Profile.objects.get(owner = request.user)
       new_Team = getProfileTeam(prof)
@@ -699,6 +700,7 @@ def taskSearch(request):
         if User.objects.filter(username = searchResault).exists():
           user = User.objects.get(username = searchResault)
           newProf = Profile.objects.get(owner = user)
+          profTeam = getProfileTeam(newProf)
           print(newProf)  
         if searchResault.isnumeric():    
           if Task.objects.filter(id = searchResault).exists():
@@ -707,8 +709,8 @@ def taskSearch(request):
             newTask.save()
             project = newTask.project
             if project.team == new_Team:
-              return render(request,'Search.html',{'new_Team':new_Team,'myProfile':prof,'newTask':newTask,'newProf':newProf})
+              return render(request,'Search.html',{'new_Team':new_Team,'myProfile':prof,'newTask':newTask,'newProf':newProf,'profTeam':profTeam})
  
-    return render(request,'Search.html',{'new_Team':new_Team,'myProfile':prof,'newTask':newTask,'newProf':newProf})
+    return render(request,'Search.html',{'new_Team':new_Team,'myProfile':prof,'newTask':newTask,'newProf':newProf,'profTeam':profTeam})
   else:
     return redirect('login')
