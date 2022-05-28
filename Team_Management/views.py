@@ -638,7 +638,7 @@ def JoinTeam(request,tm, mem, id):
     user = Profile.objects.get(title = mem)
     team.members.add(user)
     noty = Notification(title = mem+" joined the team!", forUser = team.leader)
-    noty2 = Notification(title = team.lader.owner.username+" Accept your join request, you are now "+team.title+ " member!", forUser = user)
+    noty2 = Notification(title = "You are now "+team.title+ " member!", forUser = user)
     noty.save()
     noty2.save()
     Team_Request.objects.get(id = id).delete()
