@@ -94,7 +94,8 @@ def changePhoto(request):
       role = request.POST['role']
       myProfile = Profile.objects.get(owner = request.user)
       myProfile.photo = img
-      myProfile.role = role
+      if role != "" and role is not None:
+        myProfile.role = role
       myProfile.save()
   return redirect('Home')
 
