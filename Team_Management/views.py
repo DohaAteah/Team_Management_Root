@@ -653,8 +653,9 @@ def RequestReject(request, id):
 
 def removeNoty(request, id):
   if request.user.is_authenticated:
-    Notification.objects.get(id = id).delete()
-    return redirect('toViewNotifications')
+    if Notification.objects.filter(id = id).exists():
+     Notification.objects.get(id = id).delete()
+  return redirect('toViewNotifications')
 
 def saveTaskChanges(request, tid, pValue,pid):
   if request.user.is_authenticated:
