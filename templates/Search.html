@@ -18,7 +18,7 @@
         <center> <div class="rounded-circle border shadow-lg" style="width: 300px;height: 290px;background: url('../{{newProf.photo}}');background-position: center;background-size: cover;"></div>
           <hr style="width: 80%;">
           <h4>Role: {{newProf.role}}</h4>
-          <p class="card-text"><strong>Team: </strong>{% if newProf.team is not None %} {{newProf.team}} {% else %} None {% endif %}</p>
+          <h4 class="card-text"><strong>Team: </strong>{% if newProf.team is not None %} {{newProf.team}} {% else %} None {% endif %}</h4>
           <hr style="width: 80%;">
           <h4>Rate: <bl>{{newProf.rated}}%</bl></h4>
           <h4>Tasks done: <bl>{{newProf.doneTasksNum}}</bl></h4>
@@ -258,7 +258,7 @@
 
         <p class="card-text"><strong>Role: </strong> {{newProf.role}}</p>
         
-        <p class="card-text"><strong>Team: </strong>{% if newProf.team is not None %} {{newProf.team}} {% else %} None {% endif %}</p>
+        <p class="card- mt-0"><strong>Team: </strong>{% if newProf.team is not None %} {{newProf.team}} {% else %} None {% endif %}</p>
         
         <button type="button" class="btn btn-primary btn m-2" data-bs-toggle="modal" data-bs-target="#memberInfoModal">
           <i class="fas fa-info-circle fa-fw me-3"></i><span>See Info</span>
