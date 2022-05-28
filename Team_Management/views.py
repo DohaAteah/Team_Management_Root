@@ -109,6 +109,8 @@ def addMessage(request):
       team = Team.objects.get(title = tm)
       team.messages.add(new_msg)
       team.save()
+    else:
+      return redirect('Home')
   return HttpResponse('Success!')
 
 
