@@ -690,13 +690,12 @@ def finishTask(request, pValue,tid ,pid):
 def taskSearch(request):
   if request.user.is_authenticated:
     newTask = None
+    newProf = None
     if request.method == "POST":
       prof = Profile.objects.get(owner = request.user)
       new_Team = getProfileTeam(prof)
       if new_Team is not None:   
         searchResault = request.POST['search']
-        newTask = None
-        newProf = None
         if User.objects.filter(username = searchResault).exists():
           user = User.objects.get(username = searchResault)
           newProf = Profile.objects.get(owner = user)
