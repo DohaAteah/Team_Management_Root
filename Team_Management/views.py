@@ -639,11 +639,14 @@ def JoinTeam(request,tm, mem, id):
   if request.user.is_authenticated:
     team = Team.objects.get(title = tm)
     user = Profile.objects.get(title = mem)
-    team.members.add(user)
-    noty = Notification(title = mem+" joined the team!", forUser = team.leader)
-    noty2 = Notification(title = "You are now "+team.title+ " member!", forUser = user)
-    noty.save()
-    noty2.save()
+    teamTest = None
+    teamTest = getProfileTeam(user)
+    if teamTest is None:
+      team.members.add(user)
+      noty = Notification(title = mem+" joined the team!", forUser = team.leader)
+      noty2 = Notification(title = "You are now "+team.title+ " member!", forUser = user)
+      noty.save()
+      noty2.save()
     Team_Request.objects.get(id = id).delete()
     return redirect('toViewTeam_Req')
 
