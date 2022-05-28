@@ -75,7 +75,7 @@
 
     <form action="/taskSearch" method="POST" class="d-flex ms-auto ">
       {% csrf_token %}
-      <input class="form-control me-2" type="number" placeholder="Enter task number" id="search" name="search" required>
+      <input class="form-control me-2" type="text" placeholder="Enter task number or username" id="search" name="search" required>
       <button type="submit" class="btn btn-primary" type="button">Search</button>
     </form>
   
