@@ -34,12 +34,12 @@ EMAIL_PORT = EMAIL_PORT
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = (os.environ.get('DEBUG_VALUE') == 'False')
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://control2.herokuapp.com'
+    'control2.herokuapp.com'
 ]
 
 # Application definition
