@@ -23,7 +23,7 @@ ALLOWED_HOSTS = ['control2.herokuapp.com']
 EMAIL_USE_TLS = EMAIL_USE_TLS
 EMAIL_HOST = EMAIL_HOST
 EMAIL_HOST_USER = EMAIL_HOST_USER
-EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
+EMAIL_HOST_PASSWORD = 'cktefnsenvfyxxlc'
 EMAIL_PORT = EMAIL_PORT
 
 # Quick-start development settings - unsuitable for production
