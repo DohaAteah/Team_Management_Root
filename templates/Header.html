@@ -41,6 +41,10 @@
           <center>   
             <form action="/changePhoto" enctype=multipart/form-data class="was-validated" method="post">
                 {% csrf_token %}
+                <div class="my-3">
+                  <label for="role" class="form-label">Role:</label>
+                  <input type="text" class="form-control" id="role" placeholder="Type something like(Developer, designer,..etc)" name="role">
+                </div>
                 <input type="file" accept="img/*" class="form-control" id="img"  name="img" required>
                 <button type="submit" class="btn btn-primary btn-lg">Change</button>
              </form>

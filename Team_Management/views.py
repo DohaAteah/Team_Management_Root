@@ -91,8 +91,10 @@ def changePhoto(request):
   if request.user.is_authenticated:
     if request.method == "POST":
       img = request.FILES.get('img')
+      role = request.POST['role']
       myProfile = Profile.objects.get(owner = request.user)
       myProfile.photo = img
+      myProfile.role = role
       myProfile.save()
   return redirect('Home')
 
