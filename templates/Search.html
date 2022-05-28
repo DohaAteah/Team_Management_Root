@@ -258,7 +258,7 @@
 
         <p class="card-text"><strong>Role: </strong> {{newProf.role}}</p>
         
-        <p class="card- mt-0"><strong>Team: </strong>{% if newProf.team is not None %} {{newProf.team}} {% else %} None {% endif %}</p>
+        <p class="card-text m-0"><strong>Team: </strong>{% if profTeam is not None %} {{profTeam.title}} {% else %} None {% endif %}</p>
         
         <button type="button" class="btn btn-primary btn m-2" data-bs-toggle="modal" data-bs-target="#memberInfoModal">
           <i class="fas fa-info-circle fa-fw me-3"></i><span>See Info</span>
