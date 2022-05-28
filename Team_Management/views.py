@@ -540,7 +540,7 @@ def memberRemove(request,tm, mem):
     if profTeam == team:
       if profTeam.leader == prof:
         user = Profile.objects.get(title = mem)
-        noty = Notification(title = team.leader.owner.title+" kicked you out of the team!", forUser = user)
+        noty = Notification(title = team.leader.owner.username+" kicked you out of the team!", forUser = user)
         team.members.remove(user)
         noty.save()
     return redirect('toViewTeam') 
